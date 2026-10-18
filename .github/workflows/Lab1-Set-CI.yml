@@ -21,13 +21,13 @@ jobs:
       - name: Run Linter (clang-format)
         run: |
           echo "Checking code formatting..."
-          find ./lab1/Set/src ./lab1/Set/include ./lab1/Set/unit-test -name "*.cpp" -o -name "*.h" -o -name "*.hpp" | xargs clang-format --dry-run --Werror
+          find ./Laboratory-1/Set/src ./Laboratory-1/Set/include ./Laboratory-1/Set/unit-test -name "*.cpp" -o -name "*.h" -o -name "*.hpp" | xargs clang-format --dry-run --Werror
 
       - name: Show repository files
         run: find . -name CMakeLists.txt -print
 
       - name: Configure
-        run: cmake -S ./lab1/Set -B build -G Ninja
+        run: cmake -S ./Laboratory-1/Set -B build -G Ninja
 
       - name: Build
         run: cmake --build build

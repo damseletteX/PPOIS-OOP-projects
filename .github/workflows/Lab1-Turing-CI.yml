@@ -4,15 +4,15 @@ on:
   push:
     branches: ["main"]
     paths:
-      - "lab1/TuringMachine/**"
+      - "Laboratory-1/TuringMachine/**"
       - ".github/workflows/turing-ci.yml"
   pull_request:
     paths:
-      - "lab1/TuringMachine/**"
+      - "Laboratory-1/TuringMachine/**"
 
 defaults:
   run:
-    working-directory: lab1/TuringMachine
+    working-directory: Laboratory-1/TuringMachine
 
 jobs:
   test:
@@ -27,7 +27,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
         with:
-          cache-dependency-glob: lab1/TuringMachine/uv.lock
+          cache-dependency-glob: Laboratory-1/TuringMachine/uv.lock
       - run: uv sync --locked
       - run: uv run ruff check .
       - run: uv run pytest --cov-report=xml
@@ -35,7 +35,7 @@ jobs:
         if: matrix.python-version == '3.14'
         with:
           name: coverage-report
-          path: lab1/TuringMachine/coverage.xml
+          path: Laboratory-1/TuringMachine/coverage.xml
 
   build:
     needs: test
@@ -47,4 +47,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: dist
-          path: lab1/TuringMachine/dist/
+          path: Laboratory-1/TuringMachine/dist/

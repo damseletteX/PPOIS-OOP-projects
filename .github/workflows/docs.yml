@@ -31,18 +31,18 @@ jobs:
 
       - name: Copy Doxygen Docs
         run: |
-          cp -r lab1/DOCS/Set/* _site/
+          cp -r Laboratory-1/DOCS/Set/* _site/
           
           # Если вы решите собирать Doxygen прямо на CI:
           # sudo apt-get update && sudo apt-get install -y doxygen
-          # doxygen lab1/DOCS/Doxyfile
+          # doxygen Laboratory-1/DOCS/Doxyfile
 
       - name: Setup uv
         uses: astral-sh/setup-uv@v5
 
       - name: Build pdoc Docs
         run: |
-          cd lab1/TuringMachine
+          cd Laboratory-1/TuringMachine
           uv sync --locked
           uv run pdoc -o ../../_site/pdoc TM CLI
 
