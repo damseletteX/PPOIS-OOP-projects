@@ -2,8 +2,17 @@ name: TransportCompany CI
 
 on:
   push:
+    branches: ["main", "Lab2"]
+    paths:
+      - "Laboratory-2/**"
+      - ".github/workflows/Lab2-CI.yml"
   pull_request:
-  workflow_dispatch:
+    paths:
+      - "Laboratory-2/**"
+
+defaults:
+  run:
+    working-directory: Laboratory-2/
 
 permissions:
   contents: read
