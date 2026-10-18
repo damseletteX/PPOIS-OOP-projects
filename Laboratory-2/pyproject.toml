@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "transport-company-domain"
+version = "1.0.0"
+description = "Примитивная предметная модель транспортной компании"
+requires-python = ">=3.14"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["transport_company*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=transport_company --cov-report=term-missing --cov-fail-under=91"

@@ -1,222 +1,277 @@
-# Museum — OOP Project
+# Transportation Company — OOP Project
 
-A domain model and demonstration program for a **museum**:
-exhibits, exhibitions, tickets, staff, storage, climate control,
-loans, restoration, inventory, and security.
+A Python 3 domain model and demonstration program for a **transportation company**:
+customers, employees, transport orders, shipments, fleet management, route planning,
+delivery tracking, warehouse operations, payments, invoicing, and insurance.
 
-The project is written in pure Python 3, uses no external
-dependencies at runtime, and is fully covered by pytest tests.
-
----
-
-##  Classes by package
-
-### 1 `museum_core` — physical world
-
-| Class         | Fields                                                                                 | Key methods                                                        |
-|---------------|----------------------------------------------------------------------------------------|--------------------------------------------------------------------|
-| `Museum`      | name, address, website, buildings, employees, exhibitions, funds, ticket_types, budget | find_ticket_type, add/remove_*, spend_budget, count_visitors_today |
-| `Building`    | name, address, type, floors, halls, rooms, is_open                                     | add_hall, add_room, open_for_visitors, evacuate, count_free_space  |
-| `Hall`        | number, area, showcases, current_exhibition                                            | add_showcase, set_exhibition, calculate_capacity, count_exhibits   |
-| `Room`        | number, purpose, climate_zone                                                          | assign_purpose, set_climate_zone, check_climate                    |
-| `Storage`     | name, capacity, exhibits, climate_zone                                                 | place_exhibit, remove_exhibit, find_exhibit, run_inventory         |
-| `Showcase`    | inventory_number, type, exhibit, is_locked                                             | open_showcase, close_showcase, place_exhibit, needs_restoration    |
-| `ClimateZone` | temperature, humidity, norm_temperature, norm_humidity, tolerances, sensors            | monitor, adjust, is_within_norm, set_tolerances                    |
-| `Sensor`      | id, type, zone, value, is_calibrated                                                   | read_value, send_alert, calibrate, reset                           |
-
-### 2 `museum_exhibits` — exhibit accounting
-
-| Class         | Fields                                                                            | Key methods                                                                |
-|---------------|-----------------------------------------------------------------------------------|----------------------------------------------------------------------------|
-| `Exhibit`     | inventory_number, title, author, condition, collection, insurance_value, location | move_to, attach_to_collection, update_condition, evaluate_insurance        |
-| `Painting`    | technique, width, height, frame, has_varnish                                      | area, set_frame, apply_varnish, estimate_restoration_cost                  |
-| `Sculpture`   | material, height, weight, needs_reinforcement, base_condition                     | reinforce_base, mark_for_reinforcement, calculate_weight_load              |
-| `Document`    | doc_type, pages, language, is_digitized, acidity_level, digital_copy              | digitize, check_acidity, is_fragile                                        |
-| `Collection`  | name, theme, curator, exhibits                                                    | add_exhibit, find_exhibit, calculate_total_value, available_for_exhibition |
-| `Fund`        | name, type, collections, written_off                                              | add_collection, accept_item, write_off_item, generate_report               |
-| `Catalog`     | items, index                                                                      | add, remove, find_by_number, search, filter_by_*                           |
-| `DigitalCopy` | source, format, size, resolution, path, is_published                              | create, store, publish_to_website, convert                                 |
-
-### 3 `museum_people` — visitors and staff
-
-| Class           | Fields                                                        | Key methods                                                         |
-|-----------------|---------------------------------------------------------------|---------------------------------------------------------------------|
-| `Employee`      | name, salary, hire_date, on_vacation, vacations               | work, take_vacation, raise_salary, calculate_monthly_salary         |
-| `Visitor`       | name, age, ticket, membership, card, is_inside, visit_history | buy_ticket, enter_museum, leave_museum, is_regular                  |
-| `Curator`       | specialization, collections, exhibitions                      | curate_collection, create_exhibition, select_exhibits, approve_loan |
-| `Restorer`      | specialization, certificate, tasks                            | restore_exhibit, make_restoration_report, estimate_cost             |
-| `Guide`         | languages, experience_years, tours                            | speak_language, conduct_tour, finish_tour, answer_question          |
-| `Cashier`       | shift, cash_in_register, sold_tickets                         | sell_ticket, accept_payment, close_shift, refund_ticket             |
-| `Administrator` | department, invoices, hired_employees                         | approve_loan, pay_invoice, hire_employee, fire_employee             |
-| `SecurityGuard` | shift, zone, journal, incidents                               | patrol, check_access, report_incident, close_incident               |
-
-### 4 `museum_sales` — ticketing and shop
-
-| Class         | Fields                                                          | Key methods                                                     |
-|---------------|-----------------------------------------------------------------|-----------------------------------------------------------------|
-| `Ticket`      | number, type, date, exhibition, base_cost, discount, is_used    | validate, mark_used, refund, apply_discount, covers_exhibition  |
-| `TicketType`  | name, cost, min_age, max_age                                    | is_eligible, calculate_price                                    |
-| `Membership`  | visitor, level, valid_until                                     | is_active, check_discount, renew, upgrade_level                 |
-| `MuseumCard`  | visitor, balance, is_blocked                                    | top_up, pay, block, unblock                                     |
-| `Payment`     | amount, method, status                                          | process, refund, verify                                         |
-| `ShopItem`    | name, price, stock                                              | is_available, sell, replenish, change_price                     |
-| `Order`       | buyer, items, status, payment                                   | add_item, remove_item, calculate_total, checkout, cancel        |
-| `Booking`     | visitor, date, tickets, payments, status                        | add_ticket, confirm, pay, cancel                                |
-
-### 5 `museum_security`
-
-| Class           | Fields                                           | Key methods                                              |
-|-----------------|--------------------------------------------------|----------------------------------------------------------|
-| `AccessControl` | person, zone, time, is_granted, reason           | check_access, require_access, log_entry                  |
-| `Incident`      | id, type, place, severity, date, guard, evidence | assign_guard, add_evidence, link_exhibit, close_incident |
-
-### 6 `museum_events`
-
-| Class        | Fields                                                      | Key methods                                                        |
-|--------------|-------------------------------------------------------------|--------------------------------------------------------------------|
-| `Event`      | title, type, date, venue, capacity, registered              | register, unregister, cancel, free_seats, is_same_venue_and_date   |
-| `Schedule`   | events                                                      | add_event, get_events_for_day, get_events_in_range, find_conflicts |
-| `AudioGuide` | language, duration, target, is_playing, available_languages | play, pause, stop, change_language, set_target                     |
-
-### 7 `museum_exhibitions`
-
-| Class                 | Fields                                                      | Key methods                                               |
-|-----------------------|-------------------------------------------------------------|-----------------------------------------------------------|
-| `Exhibition`          | id, title, start_date, end_date, curator, exhibits, tickets | add_exhibit, open, close, extend_dates, calculate_revenue |
-| `TemporaryExhibition` | theme, loans                                                | add_loan, return_loans, check_loans_overdue               |
-| `PermanentExhibition` | description, last_update, rotation_period_days              | update_description, set_rotation_period, rotate_exhibits  |
-| `Excursion`           | id, route_points, guide, visitors, is_started, is_finished  | add_route_point, add_visitor, start, finish, change_guide |
-
-### 8 `museum_documents`
-
-| Class             | Fields                                                          | Key methods                                                     |
-|-------------------|-----------------------------------------------------------------|-----------------------------------------------------------------|
-| `Loan`            | exhibit, borrower, start_date, end_date, status, return_*       | approve_loan, return_exhibit, extend_loan, mark_overdue         |
-| `Restoration`     | exhibit, restorer, start_date, end_date, status, cost, report   | start_restoration, complete_restoration, write_report           |
-| `Inventory`       | date, responsible, scanned, is_reconciled, mismatches           | scan_exhibit, diff, reconcile, is_clean, generate_report        |
-| `Acquisition`     | source, date, exhibit, price, is_approved, invoice              | approve_acquisition, register_exhibit, is_free                  |
-| `InsurancePolicy` | exhibit, company, amount, valid_until, policy_number            | insure_exhibit, is_active, renew, claim_insurance, cancel       |
-| `StorageMoveAct`  | exhibit, from_storage, to_storage, responsible, is_confirmed    | create, confirm, register_movement, cancel                      |
-| `Invoice`         | number, amount, payer, status, issued_date, paid_date, payment  | issue, pay, cancel, change_amount (museum is the payer)         |
-| `Contract`        | parties, terms, amount, is_signed, signed_date, permit_number   | add_party, sign, terminate, issue_permit, change_amount         |
-| `Report`          | id, period, type, data, created_date, author                    | set_author, generate, add_section, export, to_string            |
+The project includes a console interface, application services, domain entities,
+custom exceptions, and unit tests. It is designed to be installed, built, and tested
+from the command line without relying on a particular IDE.
 
 ---
 
-##  Associations (selected)
+## Classes by package
 
-An association is any case where class A references class B as a
-field or accepts it as a method parameter. Below is a representative
-list (out of ~80 total).
+### `people` — Customers and employees
 
-### Containment (A holds a reference to B)
+| Class | Fields | Key methods |
+|---|---|---|
+| `Person` | `name`, `email`, `phone`, `address`, `related_entity_id`, `notes` | `update_contact_details()`, `verify_identity()` |
+| `Customer` | `customer_code`, `billing_address`, `preferred_contact`, `credit_limit`, `related_entity_id`, `notes` | `place_order()`, `request_delivery_quote()` |
+| `BusinessCustomer` | `company_name`, `tax_number`, `contract_number`, `payment_terms_days`, `related_entity_id`, `notes` | `approve_contract_terms()`, `request_monthly_statement()` |
+| `PrivateCustomer` | `identity_document`, `delivery_instructions`, `notification_opt_in`, `customer_since`, `related_entity_id`, `notes` | `confirm_delivery_address()`, `change_notification_preferences()` |
+| `Employee` | `employee_number`, `hire_date`, `salary`, `employment_status`, `related_entity_id`, `notes` | `request_leave()`, `record_performance_review()` |
+| `Driver` | `license_number`, `license_category`, `license_expiry`, `hours_driven_today`, `related_entity_id`, `notes` | `accept_assignment()`, `record_driver_inspection()`, `report_fatigue()` |
+| `Dispatcher` | `dispatch_area`, `shift_start`, `shift_end`, `active_assignments`, `related_entity_id`, `notes` | `assign_vehicle_to_trip()`, `reassign_trip()`, `resolve_dispatch_conflict()` |
+| `Mechanic` | `specialization`, `certification_code`, `workshop_id`, `open_work_orders`, `related_entity_id`, `notes` | `diagnose_vehicle_fault()`, `complete_repair_job()` |
+| `Manager` | `department`, `approval_limit`, `management_level`, `reports_to`, `related_entity_id`, `notes` | `approve_expense()`, `review_operational_metrics()` |
+| `WarehouseWorker` | `warehouse_id`, `safety_training_date`, `forklift_certified`, `assigned_zone`, `related_entity_id`, `notes` | `record_loading_activity()`, `confirm_cargo_staging()` |
 
-| From                  | To                    | Description                                   |
-|-----------------------|-----------------------|-----------------------------------------------|
-| `Museum`              | `Building`            | museum owns its buildings                     |
-| `Museum`              | `Employee`            | museum employs staff                          |
-| `Museum`              | `Exhibition`          | museum hosts exhibitions                      |
-| `Museum`              | `Fund`                | museum keeps funds                            |
-| `Museum`              | `TicketType`          | museum defines ticket tariffs                 |
-| `Building`            | `Hall`                | building contains halls                       |
-| `Building`            | `Room`                | building contains service rooms               |
-| `Hall`                | `Showcase`            | hall contains showcases                       |
-| `Hall`                | `Exhibition`          | hall currently hosts one exhibition           |
-| `Room`                | `ClimateZone`         | room has its own climate zone                 |
-| `Storage`             | `Exhibit`             | storage holds exhibits                        |
-| `Storage`             | `ClimateZone`         | storage has a climate zone                    |
-| `Showcase`            | `Exhibit`             | showcase holds exactly one exhibit            |
-| `ClimateZone`         | `Sensor`              | climate zone has sensors                      |
-| `Sensor`              | `ClimateZone`         | sensor is attached to a zone (back-reference) |
-| `Collection`          | `Exhibit`             | collection contains exhibits                  |
-| `Collection`          | `Curator`             | collection has a curator                      |
-| `Fund`                | `Collection`          | fund groups collections                       |
-| `Catalog`             | `Exhibit`             | catalog indexes exhibits                      |
-| `DigitalCopy`         | `Exhibit`             | digital copy references its source            |
-| `Exhibit`             | `Collection`          | exhibit knows its collection (back-reference) |
-| `Exhibit`             | `InsurancePolicy`     | exhibit has a policy                          |
-| `Visitor`             | `Ticket`              | visitor holds a ticket                        |
-| `Visitor`             | `Membership`          | visitor may have a membership                 |
-| `Visitor`             | `MuseumCard`          | visitor may have a card                       |
-| `Curator`             | `Collection`          | curator curates collections                   |
-| `Curator`             | `Exhibition`          | curator creates exhibitions                   |
-| `Restorer`            | `Restoration`         | restorer performs restorations                |
-| `Cashier`             | `Ticket`              | cashier sells tickets                         |
-| `Administrator`       | `Invoice`             | admin pays supplier invoices from museum budget |
-| `Storage`             | `Inventory`           | `run_inventory` reuses `Inventory.diff`       |
-| `SecurityGuard`       | `AccessControl`       | guard logs access attempts                    |
-| `SecurityGuard`       | `Incident`            | guard reports incidents                       |
-| `Order`               | `ShopItem`            | order contains items (with quantities)        |
-| `Order`               | `Payment`             | order uses a payment                          |
-| `Booking`             | `Ticket`              | booking contains tickets                      |
-| `Booking`             | `Payment`             | booking uses a payment                        |
-| `Event`               | `Visitor`             | event tracks registered visitors              |
-| `Schedule`            | `Event`               | schedule contains events                      |
-| `Exhibition`          | `Exhibit`             | exhibition contains exhibits                  |
-| `Exhibition`          | `Ticket`              | exhibition tracks sold tickets                |
-| `TemporaryExhibition` | `Loan`                | temporary exhibition contains loans           |
-| `Excursion`           | `Hall`                | excursion route is a list of halls            |
-| `Excursion`           | `Guide`               | excursion is led by a guide                   |
-| `Excursion`           | `Visitor`             | excursion has visitors                        |
-| `Loan`                | `Exhibit`             | loan is about a specific exhibit              |
-| `Restoration`         | `Exhibit`, `Restorer` | restoration links an exhibit and a restorer   |
-| `InsurancePolicy`     | `Exhibit`             | policy is for an exhibit                      |
-| `StorageMoveAct`      | `Storage`, `Exhibit`  | move act links two storages and an exhibit    |
-| `Invoice`             | `Payment`             | invoice is paid via a payment                 |
+### `orders` — Orders, shipments and cargo
 
-### Use as parameter (A's method takes B)
+| Class | Fields | Key methods |
+|---|---|---|
+| `TransportOrder` | `order_number`, `created_at`, `status`, `priority`, `customer_id`, `related_order_id` | `validate_order()`, `cancel_order()`, `change_delivery_window()` |
+| `Shipment` | `shipment_number`, `weight_kg`, `volume_m3`, `declared_value`, `customer_id`, `related_order_id` | `split_shipment()`, `consolidate_with_shipment()` |
+| `CargoItem` | `item_code`, `description`, `quantity`, `handling_code`, `customer_id`, `related_order_id` | `mark_as_fragile()`, `calculate_chargeable_weight()` |
+| `Package` | `package_id`, `length_cm`, `width_cm`, `height_cm`, `customer_id`, `related_order_id` | `calculate_volume()`, `assign_package_label()` |
+| `Pallet` | `pallet_code`, `pallet_type`, `max_load_kg`, `is_returnable`, `customer_id`, `related_order_id` | `check_load_capacity()`, `register_pallet_return()` |
+| `DangerousGoodsDeclaration` | `un_number`, `hazard_class`, `packing_group`, `emergency_contact`, `customer_id`, `related_order_id` | `validate_hazard_documentation()`, `prepare_transport_declaration()` |
+| `TemperatureRequirement` | `minimum_celsius`, `maximum_celsius`, `monitoring_interval_minutes`, `excursion_policy`, `customer_id`, `related_order_id` | `check_temperature_reading()`, `record_temperature_excursion()` |
+| `DeliveryProof` | `proof_number`, `signed_by`, `delivered_at`, `photo_reference`, `customer_id`, `related_order_id` | `verify_recipient_signature()`, `attach_delivery_evidence()` |
+| `ReturnRequest` | `return_number`, `reason`, `requested_at`, `return_status`, `customer_id`, `related_order_id` | `approve_return()`, `schedule_return_collection()` |
+| `OrderLine` | `line_number`, `item_description`, `quantity`, `unit_price`, `customer_id`, `related_order_id` | `calculate_line_total()`, `change_quantity()` |
 
-| From            | Parameter                              | Method                            |
-|-----------------|----------------------------------------|-----------------------------------|
-| `TicketType`    | `Visitor`                              | `is_eligible(visitor)`            |
-| `TicketType`    | `Visitor`                              | `calculate_price(visitor)`        |
-| `Collection`    | `Exhibit`                              | `add_exhibit(exhibit)`            |
-| `Fund`          | `Exhibit`                              | `accept_item(exhibit)`            |
-| `Building`      | `Hall`, `Room`                         | `add_hall`, `add_room`            |
-| `Curator`       | `Loan`                                 | `approve_loan(loan)`              |
-| `Administrator` | `Loan`, `Invoice`, `Payment`, `Museum` | `approve_loan`, `pay_invoice`     |
-| `Order`         | `Payment`                              | `checkout(payment)`               |
-| `Booking`       | `Payment`                              | `pay(payment)`                    |
-| `Storage`       | `Exhibit`                              | `place_exhibit`, `remove_exhibit` |
+### `fleet` — Vehicles and maintenance
 
----
+| Class | Fields | Key methods |
+|---|---|---|
+| `Vehicle` | `registration_number`, `make`, `model`, `capacity_kg`, `vehicle_id`, `assigned_employee_id` | `check_capacity_for_shipment()`, `mark_out_of_service()`, `record_odometer_reading()` |
+| `Truck` | `trailer_type`, `axle_count`, `fuel_type`, `emissions_class`, `vehicle_id`, `assigned_employee_id` | `attach_trailer()`, `check_height_restriction()` |
+| `Van` | `cargo_volume_m3`, `urban_access_permit`, `rear_door_height_cm`, `has_refrigeration`, `vehicle_id`, `assigned_employee_id` | `check_urban_access()`, `optimise_parcel_loading()` |
+| `Trailer` | `trailer_number`, `max_payload_kg`, `trailer_length_m`, `inspection_due`, `vehicle_id`, `assigned_employee_id` | `couple_to_vehicle()`, `schedule_trailer_inspection()` |
+| `RefrigeratedUnit` | `target_temperature`, `current_temperature`, `unit_serial`, `last_calibration`, `vehicle_id`, `assigned_employee_id` | `set_target_temperature()`, `raise_temperature_alarm()` |
+| `VehicleInspection` | `inspection_id`, `inspection_date`, `inspector_name`, `result`, `vehicle_id`, `assigned_employee_id` | `record_defect()`, `certify_roadworthiness()` |
+| `MaintenanceRecord` | `record_id`, `maintenance_type`, `performed_at`, `cost`, `vehicle_id`, `assigned_employee_id` | `close_maintenance_record()`, `calculate_next_service_date()` |
+| `FuelTransaction` | `transaction_id`, `litres`, `price_per_litre`, `station_name`, `vehicle_id`, `assigned_employee_id` | `calculate_fuel_cost()`, `flag_unusual_consumption()` |
+| `Tyre` | `tyre_serial`, `position`, `tread_depth_mm`, `installed_at`, `vehicle_id`, `assigned_employee_id` | `check_tread_compliance()`, `record_tyre_rotation()` |
+| `VehicleDocument` | `document_number`, `document_type`, `valid_until`, `issuing_authority`, `vehicle_id`, `assigned_employee_id` | `check_document_validity()`, `request_document_renewal()` |
 
-##  Exceptions
+### `routing` — Routes and trips
 
-All exceptions inherit from `MuseumException`. Every exception is
-used at least once in domain logic.
+| Class | Fields | Key methods |
+|---|---|---|
+| `Route` | `route_code`, `origin`, `destination`, `distance_km`, `trip_id`, `related_route_id` | `calculate_estimated_duration()`, `avoid_restricted_roads()`, `recalculate_route()` |
+| `RouteStop` | `stop_number`, `location`, `planned_arrival`, `stop_type`, `trip_id`, `related_route_id` | `reschedule_stop()`, `confirm_stop_completion()` |
+| `Trip` | `trip_number`, `departure_time`, `arrival_deadline`, `trip_status`, `trip_id`, `related_route_id` | `start_trip()`, `complete_trip()`, `report_delay()` |
+| `TripAssignment` | `assignment_id`, `assigned_at`, `assignment_status`, `dispatcher_id`, `trip_id`, `related_route_id` | `confirm_assignment()`, `withdraw_assignment()` |
+| `TollCharge` | `toll_id`, `road_name`, `charge_amount`, `charged_at`, `trip_id`, `related_route_id` | `allocate_toll_to_trip()`, `dispute_toll_charge()` |
+| `FuelStop` | `stop_id`, `fuel_station`, `planned_litres`, `planned_time`, `trip_id`, `related_route_id` | `confirm_fuel_stop()`, `compare_fuel_prices()` |
+| `Geofence` | `geofence_id`, `center_latitude`, `center_longitude`, `radius_meters`, `trip_id`, `related_route_id` | `check_vehicle_entry()`, `trigger_geofence_event()` |
+| `TrafficIncident` | `incident_id`, `incident_type`, `reported_at`, `severity`, `trip_id`, `related_route_id` | `estimate_delay_impact()`, `propose_route_detour()` |
+| `DeliveryWindow` | `window_id`, `start_time`, `end_time`, `strictness`, `trip_id`, `related_route_id` | `check_window_feasibility()`, `negotiate_new_window()` |
+| `TrackingEvent` | `event_id`, `event_type`, `occurred_at`, `latitude`, `trip_id`, `related_route_id` | `record_location_update()`, `notify_customer_of_milestone()` |
 
-| Exception                          | Thrown by                                                                                                                                                                                                                                                                                                                                                |
-|------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `MuseumException`                  | base class for all museum errors                                                                                                                                                                                                                                                                                                                         |
-| `InvalidTicketException`           | `Ticket.validate`, `Ticket.mark_used`, `Ticket.refund`, `TicketType.calculate_price`, `Visitor.buy_ticket`, `Cashier.sell_ticket`                                                                                                                                                                                                                        |
-| `ExhibitNotFoundException`         | `Catalog.find_by_number`, `Collection.find_exhibit`                                                                                                                                                                                                                                                                                                      |
-| `RestorationException`             | `Restorer.restore_exhibit`, `Restorer.make_restoration_report`                                                                                                                                                                                                                                                                                           |
-| `LoanAlreadyActiveException`       | (reserved for future)                                                                                                                                                                                                                                                                                                                                    |
-| `LoanOverdueException`             | `Administrator.approve_loan`, `Curator.approve_loan`                                                                                                                                                                                                                                                                                                     |
-| `InsufficientFundsException`       | `Museum.spend_budget`, `MuseumCard.pay`, `Administrator.pay_invoice`                                                                                                                                                                                                                                                                                     |
-| `StorageCapacityExceededException` | `Storage.place_exhibit`                                                                                                                                                                                                                                                                                                                                  |
-| `AccessDeniedException`            | `Building.open_for_visitors`, `Showcase.open_showcase`, `AccessControl.require_access`                                                                                                                                                                                                                                                                   |
-| `ClimateControlException`          | (reserved for future)                                                                                                                                                                                                                                                                                                                                    |
-| `InventoryMismatchException`       | (reserved for future)                                                                                                                                                                                                                                                                                                                                    |
-| `PaymentFailedException`           | `Cashier.accept_payment`, `Administrator.pay_invoice`, `Order.checkout`, `Booking.pay` (propagated from `Payment.process`)                                                                                                                                                                                                                               |
-| `BookingConflictException`         | `Hall.set_exhibition`                                                                                                                                                                                                                                                                                                                                    |
-| `InvalidExhibitStateException`     | `Exhibit.attach_to_collection`, `Showcase.open/place/remove`, `Collection.add_exhibit`, `Employee.take_vacation`, `Visitor.enter_museum`, `Loan.*`, `Restoration.*`, `Invoice.*`, `Order.checkout`, `Booking.*`, `Event.*`, `Exhibition.*`, `Excursion.*`, `Incident.*`, `Acquisition.*`, `InsurancePolicy.*`, `Contract.*`, `Payment.*`, `MuseumCard.*` |
+### `finance` — Finance and insurance
+
+| Class | Fields | Key methods |
+|---|---|---|
+| `Invoice` | `invoice_number`, `issued_at`, `due_date`, `total_amount`, `customer_id`, `related_document_id` | `calculate_amount_due()`, `mark_as_paid()`, `issue_credit_note()` |
+| `Payment` | `payment_reference`, `amount`, `payment_method`, `received_at`, `customer_id`, `related_document_id` | `allocate_payment_to_invoice()`, `refund_payment()` |
+| `RateCard` | `rate_card_code`, `base_rate`, `per_km_rate`, `effective_from`, `customer_id`, `related_document_id` | `quote_transport_price()`, `apply_surcharge()` |
+| `Discount` | `discount_code`, `percentage`, `valid_from`, `valid_until`, `customer_id`, `related_document_id` | `check_discount_eligibility()`, `apply_discount()` |
+| `Expense` | `expense_id`, `category`, `amount`, `incurred_at`, `customer_id`, `related_document_id` | `submit_for_approval()`, `allocate_expense_to_trip()` |
+| `PayrollRecord` | `payroll_id`, `period_start`, `period_end`, `gross_pay`, `customer_id`, `related_document_id` | `calculate_net_pay()`, `finalise_payroll()` |
+| `FuelBudget` | `budget_id`, `period`, `allocated_amount`, `spent_amount`, `customer_id`, `related_document_id` | `calculate_budget_variance()`, `forecast_fuel_spend()` |
+| `InsurancePolicy` | `policy_number`, `provider`, `coverage_limit`, `expires_at`, `customer_id`, `related_document_id` | `check_claim_coverage()`, `renew_policy()` |
+| `Claim` | `claim_number`, `claim_type`, `claim_amount`, `claim_status`, `customer_id`, `related_document_id` | `submit_claim_evidence()`, `settle_claim()` |
+| `FinancialReport` | `report_id`, `period`, `revenue`, `operating_cost`, `customer_id`, `related_document_id` | `calculate_profit_margin()`, `export_financial_summary()` |
+
+### `operations` — Warehouse and operations
+
+| Class | Fields | Key methods |
+|---|---|---|
+| `Warehouse` | `warehouse_code`, `address`, `capacity_pallets`, `operating_hours`, `warehouse_id`, `related_entity_id` | `check_storage_capacity()`, `allocate_storage_zone()` |
+| `StorageZone` | `zone_code`, `zone_type`, `capacity`, `temperature_controlled`, `warehouse_id`, `related_entity_id` | `reserve_storage_space()`, `audit_zone_occupancy()` |
+| `LoadingPlan` | `plan_id`, `loading_date`, `sequence_rule`, `prepared_by`, `warehouse_id`, `related_entity_id` | `optimise_loading_sequence()`, `validate_weight_distribution()` |
+| `Manifest` | `manifest_number`, `created_at`, `trip_number`, `seal_number`, `warehouse_id`, `related_entity_id` | `add_shipment_to_manifest()`, `reconcile_manifest()` |
+| `CustomsDeclaration` | `declaration_number`, `destination_country`, `commodity_code`, `customs_value`, `warehouse_id`, `related_entity_id` | `validate_customs_fields()`, `submit_customs_declaration()` |
+| `Permit` | `permit_number`, `permit_type`, `valid_from`, `valid_until`, `warehouse_id`, `related_entity_id` | `check_permit_for_route()`, `request_permit_extension()` |
+| `ServiceLevelAgreement` | `agreement_number`, `max_delivery_hours`, `on_time_target_percent`, `penalty_rate`, `warehouse_id`, `related_entity_id` | `check_sla_compliance()`, `calculate_service_credit()` |
+| `IncidentReport` | `incident_number`, `incident_category`, `description`, `reported_by`, `warehouse_id`, `related_entity_id` | `classify_incident()`, `escalate_incident()` |
+| `Notification` | `notification_id`, `channel`, `recipient`, `message`, `warehouse_id`, `related_entity_id` | `send_notification()`, `schedule_reminder()` |
+| `AuditLogEntry` | `entry_id`, `actor_id`, `action`, `timestamp`, `warehouse_id`, `related_entity_id` | `record_audit_event()`, `search_related_events()` |
 
 ---
 
-## Scenarios (see `main.py`)
+## Associations
 
-You'll get an interactive menu with 10 scenarios. Each scenario in `main.py` demonstrates a real-world workflow that
-crosses several packages:
+An association is a relationship in which one class references another as a field
+or uses it as a method parameter. The domain model documents the following
+**50 relationships**:
 
-1. **Ticket sale and visitor entry** — `Visitor`, `Cashier`, `TicketType`, `Ticket`, `SecurityGuard`, `AccessControl`.
-2. **Guided excursion** — `Guide`, `Excursion`, `Hall`, `Visitor`.
-3. **Exhibit restoration** — `Restorer`, `Restoration`, `Painting`, `Report`.
-4. **Exhibit loan** — `Administrator`, `Loan`, `Painting`, `Contract`.
-5. **Storage inventory** — `Storage`, `Inventory`, `Employee`, `Painting`.
-6. **New acquisition** — `Acquisition`, `Painting`, `Fund`, `Collection`.
-7. **Incident in the hall** — `SecurityGuard`, `Incident`.
-8. **Museum shop purchase** — `Visitor`, `Membership`, `Order`, `ShopItem`, `Payment`.
-9. **Climate monitoring** — `ClimateZone`, `Sensor`, `SensorType`.
-10. **Create an exhibition** — `Curator`, `Collection`, `Exhibition`, `Ticket`.
+| From | To | Description |
+|---|---|---|
+| `Customer` | `TransportOrder` | places |
+| `BusinessCustomer` | `Invoice` | is billed through |
+| `PrivateCustomer` | `DeliveryProof` | receives |
+| `TransportOrder` | `Shipment` | contains |
+| `TransportOrder` | `Customer` | belongs to |
+| `TransportOrder` | `DeliveryWindow` | specifies |
+| `Shipment` | `CargoItem` | contains |
+| `CargoItem` | `Package` | is packed in |
+| `Package` | `Pallet` | may be loaded on |
+| `Shipment` | `DangerousGoodsDeclaration` | may require |
+| `Shipment` | `TemperatureRequirement` | may specify |
+| `Shipment` | `DeliveryProof` | is confirmed by |
+| `ReturnRequest` | `TransportOrder` | refers to |
+| `OrderLine` | `TransportOrder` | belongs to |
+| `Driver` | `TripAssignment` | receives |
+| `Dispatcher` | `TripAssignment` | creates |
+| `TripAssignment` | `Trip` | assigns resources to |
+| `Trip` | `Route` | follows |
+| `Route` | `RouteStop` | contains |
+| `Trip` | `Vehicle` | uses |
+| `Truck` | `Trailer` | may tow |
+| `Vehicle` | `VehicleInspection` | undergoes |
+| `Vehicle` | `MaintenanceRecord` | has |
+| `Vehicle` | `FuelTransaction` | records |
+| `Vehicle` | `Tyre` | uses |
+| `Vehicle` | `VehicleDocument` | requires |
+| `RefrigeratedUnit` | `TemperatureRequirement` | fulfils |
+| `Trip` | `TollCharge` | incurs |
+| `Trip` | `FuelStop` | may include |
+| `Route` | `Geofence` | may cross |
+| `Route` | `TrafficIncident` | is affected by |
+| `Trip` | `TrackingEvent` | generates |
+| `Trip` | `DeliveryWindow` | must meet |
+| `Invoice` | `Payment` | is settled by |
+| `Invoice` | `RateCard` | is priced using |
+| `RateCard` | `Discount` | may apply |
+| `Expense` | `Trip` | is allocated to |
+| `Employee` | `PayrollRecord` | has |
+| `FuelBudget` | `FuelTransaction` | covers |
+| `InsurancePolicy` | `Claim` | covers |
+| `Warehouse` | `StorageZone` | contains |
+| `WarehouseWorker` | `Warehouse` | works at |
+| `LoadingPlan` | `Manifest` | supports |
+| `Manifest` | `Shipment` | lists |
+| `CustomsDeclaration` | `Shipment` | declares |
+| `Permit` | `Route` | authorises |
+| `ServiceLevelAgreement` | `Customer` | governs |
+| `IncidentReport` | `Trip` | may concern |
+| `Notification` | `Customer` | is sent to |
+| `AuditLogEntry` | `Employee` | records activity of |
+
+---
+
+## Custom exceptions
+
+Domain-specific exceptions represent invalid operations and business-rule violations.
+The project defines:
+
+| Exception | Purpose |
+|---|---|
+| `TransportCompanyError` | Base class for domain errors. |
+| `InvalidOrderError` | An order or shipment fails validation. |
+| `CustomerNotFoundError` | A requested customer or employee record cannot be found. |
+| `VehicleUnavailableError` | A vehicle cannot be assigned. |
+| `DriverUnavailableError` | A driver cannot be assigned. |
+| `CapacityExceededError` | Cargo exceeds vehicle or storage capacity. |
+| `RouteNotFeasibleError` | A route is unsafe or not legally feasible. |
+| `DeliveryWindowError` | A delivery cannot meet its delivery window. |
+| `PaymentProcessingError` | A payment operation fails. |
+| `InvoiceStateError` | An invoice state transition is invalid. |
+| `MaintenanceRequiredError` | A vehicle requires maintenance before use. |
+| `PermitExpiredError` | A required permit has expired. |
+| `DangerousGoodsComplianceError` | Dangerous-goods requirements are not met. |
+| `TemperatureExcursionError` | Cargo temperature is outside its permitted range. |
+| `DuplicateReferenceError` | A unique business reference already exists. |
+| `ResourceConflictError` | A resource is double-booked or otherwise conflicts. |
+
+---
+
+## CLI scenarios
+
+Run `python main.py` to open the interactive console menu. The CLI is kept separate
+from the application service layer in `transport_company/application.py`.
+
+The menu currently demonstrates these workflows:
+
+1. **Add an employee** — validate and store an employee record.
+2. **Remove an employee** — remove an existing employee by ID.
+3. **Register a shipment** — validate the reference, destination, and positive weight.
+4. **Dispatch a shipment** — change a registered shipment to `in_transit`.
+5. **Generate a report** — show employee count, shipment count, shipments in transit, and total weight.
+
+---
+
+## Tests, coverage, and command-line setup
+
+The project uses `pytest` and `pytest-cov`. Tests can be run from a terminal and do not
+require an IDE. The pytest configuration sets a minimum coverage threshold of 91%.
+A passing test run means the configured coverage threshold was met; it does not by itself
+prove that every domain method implements complete production business logic.
+
+### Install
+
+```bash
+python -m venv .venv
+# Linux/macOS
+source .venv/bin/activate
+# Windows PowerShell: .venv\Scripts\Activate.ps1
+python -m pip install -e . -r requirements.txt
+```
+
+### Run the application
+
+```bash
+python main.py
+```
+
+### Run unit tests and check coverage
+
+```bash
+python -m pytest
+```
+
+### Optional Makefile commands
+
+```bash
+make install
+make run
+make test
+```
+
+---
+
+## Project structure
+
+```text
+main.py                         # Console menu (CLI)
+pyproject.toml                  # Build and pytest configuration
+requirements.txt                # Test dependencies
+Makefile                        # Optional command shortcuts
+transport_company/
+  application.py                # Application/service layer used by the CLI
+  people.py                     # Customers and employees
+  orders.py                     # Orders, shipments and cargo
+  fleet.py                      # Vehicles and maintenance
+  routing.py                    # Routes, trips and tracking
+  finance.py                    # Invoices, payments and insurance
+  operations.py                 # Warehouse and operational records
+  associations.py               # Explicit association catalogue
+  exceptions.py                 # Custom domain exceptions
+tests/
+  test_application.py            # Application workflow tests
+  test_domain_catalog.py          # Domain constructors and method smoke tests
+BEHAVIOR_CATALOG.md              # Expanded domain behavior catalogue
+```
+
+## Notes
+
+- Python 3.14 or newer is specified in `pyproject.toml`.
+- The CLI and application service layer are separate from the domain entity modules.
+- The current domain catalogue includes methods whose implementations are still basic placeholders;
+  extend them with concrete validation, calculations, state changes, and focused tests before production use.
+- Keep the README synchronized with the implementation as the domain model evolves.
