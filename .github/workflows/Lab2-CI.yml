@@ -1,11 +1,12 @@
-
-name: Lab2 CI
+name: Lab2 CI and executable release
 
 on:
   push:
     branches:
       - main
       - Lab2
+    tags:
+      - "v2*"
     paths:
       - "Laboratory-2/**"
       - ".github/workflows/Lab2-CI.yml"
@@ -20,14 +21,14 @@ on:
 permissions:
   contents: read
 
+defaults:
+  run:
+    working-directory: Laboratory-2
+
 jobs:
   unit-tests:
     name: Tests, coverage and lint
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: Laboratory-2
 
     steps:
       - name: Checkout repository
@@ -54,3 +55,61 @@ jobs:
 
       - name: Show coverage and enforce 90% minimum
         run: uv run --locked coverage report --fail-under=90
+
+  build-demo:
+    name: Build Windows executable
+    needs: unit-tests
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install uv and Python
+        uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e9 # v10.3.2
+        with:
+          version: "0.13.6"
+          python-version: "3.14"
+          enable-cache: true
+          cache-dependency-glob: Laboratory-2/uv.lock
+
+      - name: Install dependencies
+        run: uv sync --locked --group dev
+
+      - name: Build demo executable
+        run: uv run --locked pyinstaller --noconfirm --clean --onefile --name transport-company-demo main.py
+
+      - name: Upload executable artifact
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: transport-company-demo-windows
+          path: Laboratory-2/dist/transport-company-demo.exe
+          if-no-files-found: error
+          retention-days: 14
+
+  publish-release:
+    name: Publish executable to GitHub Releases
+    needs:
+      - build-demo
+    if: startsWith(github.ref, 'refs/tags/v2')
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download Windows executable
+        uses: actions/download-artifact@v8.0.2
+        with:
+          name: transport-company-demo-windows
+          path: release-assets
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Transport Company ${{ github.ref_name }}
+          generate_release_notes: true
+          files: release-assets/transport-company-demo.exe
+          fail_on_unmatched_files: true
+          token: ${{ secrets.GITHUB_TOKEN }}
