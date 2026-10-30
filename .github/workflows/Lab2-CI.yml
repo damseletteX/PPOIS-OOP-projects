@@ -2,7 +2,7 @@ name: Lab2 CI
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "Lab2"]
     paths:
       - "Laboratory-2/**"
       - ".github/workflows/Lab2-CI.yml"
