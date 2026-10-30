@@ -1,9 +1,8 @@
-
 """Классы транспортных средств и учёта их эксплуатации."""
 
 from datetime import date
 
-from exceptions import (
+from .exceptions import (
     InvalidVehicleError,
     VehicleUnavailableError,
 )
@@ -65,10 +64,7 @@ class Vehicle:
 
     def can_transport(self, cargo_weight_kg: float) -> bool:
         """Проверяет, подходит ли транспорт по грузоподъёмности."""
-        return (
-            self.is_available
-            and 0 < cargo_weight_kg <= self.capacity_kg
-        )
+        return self.is_available and 0 < cargo_weight_kg <= self.capacity_kg
 
     def change_location(self, new_location: str):
         """Изменяет местоположение транспортного средства."""
@@ -87,9 +83,7 @@ class Vehicle:
     def add_inspection(self, inspection):
         """Добавляет запись о техосмотре."""
         if inspection.vehicle is not self:
-            raise InvalidVehicleError(
-                "Техосмотр относится к другому транспортному средству."
-            )
+            raise InvalidVehicleError("Техосмотр относится к другому транспортному средству.")
         self.inspections.append(inspection)
 
     def add_maintenance_record(self, record):
@@ -114,28 +108,36 @@ class Vehicle:
 
     def calculate_total_maintenance_cost(self) -> float:
         """Считает общую стоимость обслуживания и ремонта."""
-        return sum(
-            record.cost for record in self.maintenance_records
-        )
+        return sum(record.cost for record in self.maintenance_records)
 
     def __str__(self):
-        return (
-            f"{self.brand} {self.model} ({self.registration_number}), "
-            f"{self.capacity_kg} кг"
-        )
+        return f"{self.brand} {self.model} ({self.registration_number}), {self.capacity_kg} кг"
 
 
 class Truck(Vehicle):
     """Грузовой автомобиль."""
 
     def __init__(
-        self, vehicle_id, brand, model, year, registration_number,
-        capacity_kg, cargo_volume_m3, required_license_category="C",
+        self,
+        vehicle_id,
+        brand,
+        model,
+        year,
+        registration_number,
+        capacity_kg,
+        cargo_volume_m3,
+        required_license_category="C",
         fuel_type="diesel",
     ):
         super().__init__(
-            vehicle_id, brand, model, year, registration_number,
-            capacity_kg, required_license_category, fuel_type,
+            vehicle_id,
+            brand,
+            model,
+            year,
+            registration_number,
+            capacity_kg,
+            required_license_category,
+            fuel_type,
         )
         if cargo_volume_m3 <= 0:
             raise InvalidVehicleError("Объём кузова должен быть положительным.")
@@ -161,13 +163,26 @@ class Van(Vehicle):
     """Фургон для небольших грузов."""
 
     def __init__(
-        self, vehicle_id, brand, model, year, registration_number,
-        capacity_kg, cargo_volume_m3, required_license_category="B",
+        self,
+        vehicle_id,
+        brand,
+        model,
+        year,
+        registration_number,
+        capacity_kg,
+        cargo_volume_m3,
+        required_license_category="B",
         fuel_type="diesel",
     ):
         super().__init__(
-            vehicle_id, brand, model, year, registration_number,
-            capacity_kg, required_license_category, fuel_type,
+            vehicle_id,
+            brand,
+            model,
+            year,
+            registration_number,
+            capacity_kg,
+            required_license_category,
+            fuel_type,
         )
         if cargo_volume_m3 <= 0:
             raise InvalidVehicleError("Объём фургона должен быть положительным.")
@@ -189,14 +204,29 @@ class RefrigeratedTruck(Truck):
     """Грузовик с холодильной установкой."""
 
     def __init__(
-        self, vehicle_id, brand, model, year, registration_number,
-        capacity_kg, cargo_volume_m3, min_temperature_c,
-        max_temperature_c, required_license_category="C",
+        self,
+        vehicle_id,
+        brand,
+        model,
+        year,
+        registration_number,
+        capacity_kg,
+        cargo_volume_m3,
+        min_temperature_c,
+        max_temperature_c,
+        required_license_category="C",
         fuel_type="diesel",
     ):
         super().__init__(
-            vehicle_id, brand, model, year, registration_number,
-            capacity_kg, cargo_volume_m3, required_license_category, fuel_type,
+            vehicle_id,
+            brand,
+            model,
+            year,
+            registration_number,
+            capacity_kg,
+            cargo_volume_m3,
+            required_license_category,
+            fuel_type,
         )
         if min_temperature_c > max_temperature_c:
             raise InvalidVehicleError("Минимальная температура выше максимальной.")
@@ -221,24 +251,33 @@ class RefrigeratedTruck(Truck):
 
     def check_temperature(self) -> bool:
         """Проверяет, соответствует ли текущая температура заданному диапазону."""
-        return (
-            self.min_temperature_c
-            <= self.current_temperature_c
-            <= self.max_temperature_c
-        )
+        return self.min_temperature_c <= self.current_temperature_c <= self.max_temperature_c
 
 
 class Tanker(Vehicle):
     """Автоцистерна для жидких грузов."""
 
     def __init__(
-        self, vehicle_id, brand, model, year, registration_number,
-        capacity_kg, tank_volume_liters, required_license_category="C",
+        self,
+        vehicle_id,
+        brand,
+        model,
+        year,
+        registration_number,
+        capacity_kg,
+        tank_volume_liters,
+        required_license_category="C",
         fuel_type="diesel",
     ):
         super().__init__(
-            vehicle_id, brand, model, year, registration_number,
-            capacity_kg, required_license_category, fuel_type,
+            vehicle_id,
+            brand,
+            model,
+            year,
+            registration_number,
+            capacity_kg,
+            required_license_category,
+            fuel_type,
         )
         if tank_volume_liters <= 0:
             raise InvalidVehicleError("Объём цистерны должен быть положительным.")
@@ -277,13 +316,28 @@ class FlatbedTruck(Truck):
     """Грузовик с открытой платформой."""
 
     def __init__(
-        self, vehicle_id, brand, model, year, registration_number,
-        capacity_kg, cargo_volume_m3, platform_length_m,
-        required_license_category="C", fuel_type="diesel",
+        self,
+        vehicle_id,
+        brand,
+        model,
+        year,
+        registration_number,
+        capacity_kg,
+        cargo_volume_m3,
+        platform_length_m,
+        required_license_category="C",
+        fuel_type="diesel",
     ):
         super().__init__(
-            vehicle_id, brand, model, year, registration_number,
-            capacity_kg, cargo_volume_m3, required_license_category, fuel_type,
+            vehicle_id,
+            brand,
+            model,
+            year,
+            registration_number,
+            capacity_kg,
+            cargo_volume_m3,
+            required_license_category,
+            fuel_type,
         )
         if platform_length_m <= 0:
             raise InvalidVehicleError("Длина платформы должна быть положительной.")
@@ -307,8 +361,11 @@ class Trailer:
     """Прицеп, который может быть присоединён к тягачу."""
 
     def __init__(
-        self, trailer_id: str, registration_number: str,
-        capacity_kg: float, volume_m3: float,
+        self,
+        trailer_id: str,
+        registration_number: str,
+        capacity_kg: float,
+        volume_m3: float,
     ):
         if not trailer_id or not registration_number:
             raise InvalidVehicleError("Укажите ID и номер прицепа.")
@@ -350,8 +407,11 @@ class VehicleInspection:
     """Запись о техническом осмотре."""
 
     def __init__(
-        self, inspection_id: str, vehicle: Vehicle,
-        inspection_date: date, inspector: str,
+        self,
+        inspection_id: str,
+        vehicle: Vehicle,
+        inspection_date: date,
+        inspector: str,
     ):
         if not inspection_id or not inspector:
             raise InvalidVehicleError("Укажите ID осмотра и имя проверяющего.")
@@ -379,18 +439,19 @@ class VehicleInspection:
     def is_overdue(self, today: date | None = None) -> bool:
         """Проверяет, просрочен ли следующий осмотр."""
         today = today or date.today()
-        return (
-            self.next_inspection_date is not None
-            and today > self.next_inspection_date
-        )
+        return self.next_inspection_date is not None and today > self.next_inspection_date
 
 
 class MaintenanceRecord:
     """Запись о ремонте или техническом обслуживании."""
 
     def __init__(
-        self, record_id: str, vehicle: Vehicle,
-        service_date: date, description: str, cost: float,
+        self,
+        record_id: str,
+        vehicle: Vehicle,
+        service_date: date,
+        description: str,
+        cost: float,
     ):
         if not record_id or not description:
             raise InvalidVehicleError("Укажите ID записи и описание работ.")
@@ -428,8 +489,12 @@ class FuelRecord:
     """Запись о заправке транспортного средства."""
 
     def __init__(
-        self, record_id: str, vehicle: Vehicle,
-        fuel_date: date, liters: float, price_per_liter: float,
+        self,
+        record_id: str,
+        vehicle: Vehicle,
+        fuel_date: date,
+        liters: float,
+        price_per_liter: float,
     ):
         if not record_id:
             raise InvalidVehicleError("Укажите ID записи о заправке.")

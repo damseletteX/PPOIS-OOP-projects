@@ -1,9 +1,8 @@
-
 """Управление транспортной компанией."""
 
 from datetime import date, datetime
-
-from exceptions import (
+from .people import Driver, CorporateCustomer
+from .exceptions import (
     InvalidCustomerError,
     InvalidDriverError,
     InvalidVehicleError,
@@ -31,9 +30,7 @@ class EmployeeRegistry:
             raise InvalidDriverError("Сотрудник уже зарегистрирован.")
 
         self.employees[employee_id] = employee
-        self.registration_history.append(
-            f"Зарегистрирован сотрудник {employee_id}"
-        )
+        self.registration_history.append(f"Зарегистрирован сотрудник {employee_id}")
         self.last_updated = datetime.now()
 
     def unregister(self, employee_id: str):
@@ -44,14 +41,10 @@ class EmployeeRegistry:
             return False
 
         if getattr(employee, "assigned_vehicle", None) is not None:
-            raise InvalidDriverError(
-                "Нельзя удалить водителя с назначенным транспортом."
-            )
+            raise InvalidDriverError("Нельзя удалить водителя с назначенным транспортом.")
 
         del self.employees[employee_id]
-        self.registration_history.append(
-            f"Удалён сотрудник {employee_id}"
-        )
+        self.registration_history.append(f"Удалён сотрудник {employee_id}")
         self.last_updated = datetime.now()
         return True
 
@@ -64,26 +57,18 @@ class EmployeeRegistry:
         search_name = name.lower()
 
         return [
-            employee
-            for employee in self.employees.values()
-            if search_name in employee.name.lower()
+            employee for employee in self.employees.values() if search_name in employee.name.lower()
         ]
 
     def get_active_employees(self):
         """Возвращает список активных сотрудников."""
         return [
-            employee
-            for employee in self.employees.values()
-            if getattr(employee, "is_active", True)
+            employee for employee in self.employees.values() if getattr(employee, "is_active", True)
         ]
 
     def get_drivers(self):
         """Возвращает сотрудников, являющихся водителями."""
-        return [
-            employee
-            for employee in self.employees.values()
-            if hasattr(employee, "license_category")
-        ]
+        return [employee for employee in self.employees.values() if isinstance(employee, Driver)]
 
     def get_by_department(self, department_name: str):
         """Возвращает сотрудников выбранного отдела."""
@@ -110,10 +95,7 @@ class EmployeeRegistry:
     def calculate_total_salary(self):
         """Считает сумму зарплат всех сотрудников."""
         return round(
-            sum(
-                getattr(employee, "salary", 0)
-                for employee in self.employees.values()
-            ),
+            sum(getattr(employee, "salary", 0) for employee in self.employees.values()),
             2,
         )
 
@@ -154,16 +136,12 @@ class CustomerRegistry:
         customer_id = getattr(customer, "customer_id", None)
 
         if not customer_id:
-            raise InvalidCustomerError(
-                "У клиента отсутствует идентификатор."
-            )
+            raise InvalidCustomerError("У клиента отсутствует идентификатор.")
         if customer_id in self.customers:
             raise InvalidCustomerError("Клиент уже зарегистрирован.")
 
         self.customers[customer_id] = customer
-        self.registration_history.append(
-            f"Зарегистрирован клиент {customer_id}"
-        )
+        self.registration_history.append(f"Зарегистрирован клиент {customer_id}")
         self.last_updated = datetime.now()
 
     def unregister(self, customer_id: str):
@@ -176,19 +154,14 @@ class CustomerRegistry:
         active_orders = [
             order
             for order in getattr(customer, "orders", [])
-            if getattr(order, "status", None)
-            not in ("delivered", "cancelled")
+            if getattr(order, "status", None) not in ("delivered", "cancelled")
         ]
 
         if active_orders:
-            raise InvalidCustomerError(
-                "Нельзя удалить клиента с активными заказами."
-            )
+            raise InvalidCustomerError("Нельзя удалить клиента с активными заказами.")
 
         del self.customers[customer_id]
-        self.registration_history.append(
-            f"Удалён клиент {customer_id}"
-        )
+        self.registration_history.append(f"Удалён клиент {customer_id}")
         self.last_updated = datetime.now()
         return True
 
@@ -201,17 +174,13 @@ class CustomerRegistry:
         search_name = name.lower()
 
         return [
-            customer
-            for customer in self.customers.values()
-            if search_name in customer.name.lower()
+            customer for customer in self.customers.values() if search_name in customer.name.lower()
         ]
 
     def get_active_customers(self):
         """Возвращает список активных клиентов."""
         return [
-            customer
-            for customer in self.customers.values()
-            if getattr(customer, "is_active", True)
+            customer for customer in self.customers.values() if getattr(customer, "is_active", True)
         ]
 
     def get_corporate_customers(self):
@@ -219,23 +188,17 @@ class CustomerRegistry:
         return [
             customer
             for customer in self.customers.values()
-            if hasattr(customer, "company_name")
+            if isinstance(customer, CorporateCustomer)
         ]
 
     def get_customers_with_orders(self):
         """Возвращает клиентов, у которых есть заказы."""
-        return [
-            customer
-            for customer in self.customers.values()
-            if getattr(customer, "orders", [])
-        ]
+        return [customer for customer in self.customers.values() if getattr(customer, "orders", [])]
 
     def get_customers_without_orders(self):
         """Возвращает клиентов без заказов."""
         return [
-            customer
-            for customer in self.customers.values()
-            if not getattr(customer, "orders", [])
+            customer for customer in self.customers.values() if not getattr(customer, "orders", [])
         ]
 
     def count_customers(self):
@@ -244,10 +207,7 @@ class CustomerRegistry:
 
     def calculate_total_orders(self):
         """Считает общее количество заказов клиентов."""
-        return sum(
-            len(getattr(customer, "orders", []))
-            for customer in self.customers.values()
-        )
+        return sum(len(getattr(customer, "orders", [])) for customer in self.customers.values())
 
     def get_customer_order_history(self, customer_id: str):
         """Возвращает историю заказов конкретного клиента."""
@@ -286,16 +246,12 @@ class OrderRegistry:
         order_id = getattr(order, "order_id", None)
 
         if not order_id:
-            raise InvalidOrderStatusError(
-                "У заказа отсутствует идентификатор."
-            )
+            raise InvalidOrderStatusError("У заказа отсутствует идентификатор.")
         if order_id in self.orders:
             raise InvalidOrderStatusError("Заказ уже зарегистрирован.")
 
         self.orders[order_id] = order
-        self.registration_history.append(
-            f"Зарегистрирован заказ {order_id}"
-        )
+        self.registration_history.append(f"Зарегистрирован заказ {order_id}")
         self.last_updated = datetime.now()
 
     def unregister(self, order_id: str):
@@ -306,9 +262,7 @@ class OrderRegistry:
             return False
 
         if order.status not in ("new", "cancelled"):
-            raise InvalidOrderStatusError(
-                "Нельзя удалить заказ в работе."
-            )
+            raise InvalidOrderStatusError("Нельзя удалить заказ в работе.")
 
         del self.orders[order_id]
         self.last_updated = datetime.now()
@@ -320,27 +274,15 @@ class OrderRegistry:
 
     def get_by_status(self, status: str):
         """Возвращает заказы с указанным статусом."""
-        return [
-            order
-            for order in self.orders.values()
-            if order.status == status
-        ]
+        return [order for order in self.orders.values() if order.status == status]
 
     def get_by_customer(self, customer):
         """Возвращает заказы конкретного клиента."""
-        return [
-            order
-            for order in self.orders.values()
-            if order.customer is customer
-        ]
+        return [order for order in self.orders.values() if order.customer is customer]
 
     def get_by_priority(self, priority: str):
         """Возвращает заказы с указанным приоритетом."""
-        return [
-            order
-            for order in self.orders.values()
-            if order.priority == priority
-        ]
+        return [order for order in self.orders.values() if order.priority == priority]
 
     def get_overdue_orders(self, check_date: date | None = None):
         """Находит заказы, срок доставки которых истёк."""
@@ -364,10 +306,7 @@ class OrderRegistry:
     def calculate_total_value(self):
         """Считает общую стоимость позиций всех заказов."""
         return round(
-            sum(
-                order.calculate_items_cost()
-                for order in self.orders.values()
-            ),
+            sum(order.calculate_items_cost() for order in self.orders.values()),
             2,
         )
 
@@ -398,20 +337,27 @@ class OrderRegistry:
         if end_date < start_date:
             raise ValueError("Некорректный период.")
 
-        return [
-            order
-            for order in self.orders.values()
-            if start_date <= order.created_at.date() <= end_date
-        ]
+        result = []
+
+        for order in self.orders.values():
+            created_at = order.created_at
+
+            # Если дата содержит время, преобразуем её в date.
+            if isinstance(created_at, datetime):
+                created_at = created_at.date()
+
+            # Сравниваем даты.
+            if isinstance(created_at, date) and start_date <= created_at <= end_date:
+                result.append(order)
+
+        return result
 
     def get_order_statistics(self):
         """Формирует статистику по статусам заказов."""
         statistics = {}
 
         for order in self.orders.values():
-            statistics[order.status] = (
-                statistics.get(order.status, 0) + 1
-            )
+            statistics[order.status] = statistics.get(order.status, 0) + 1
 
         return statistics
 
@@ -460,15 +406,11 @@ class Fleet:
         if vehicle is None:
             return False
         if not vehicle.is_available:
-            raise VehicleUnavailableError(
-                "Нельзя удалить используемое транспортное средство."
-            )
+            raise VehicleUnavailableError("Нельзя удалить используемое транспортное средство.")
 
         for driver_id, driver in list(self.assigned_drivers.items()):
             if getattr(driver, "assigned_vehicle", None) is vehicle:
-                raise InvalidVehicleError(
-                    "Сначала необходимо отвязать водителя от транспорта."
-                )
+                raise InvalidVehicleError("Сначала необходимо отвязать водителя от транспорта.")
 
         del self.vehicles[vehicle_id]
         return True
@@ -479,19 +421,11 @@ class Fleet:
 
     def get_available_vehicles(self):
         """Возвращает свободный транспорт."""
-        return [
-            vehicle
-            for vehicle in self.vehicles.values()
-            if vehicle.is_available
-        ]
+        return [vehicle for vehicle in self.vehicles.values() if vehicle.is_available]
 
     def get_unavailable_vehicles(self):
         """Возвращает занятый или недоступный транспорт."""
-        return [
-            vehicle
-            for vehicle in self.vehicles.values()
-            if not vehicle.is_available
-        ]
+        return [vehicle for vehicle in self.vehicles.values() if not vehicle.is_available]
 
     def find_by_registration(self, registration_number: str):
         """Находит транспорт по регистрационному номеру."""
@@ -527,9 +461,7 @@ class Fleet:
         if driver is None:
             return False
         if not driver.is_available:
-            raise InvalidDriverError(
-                "Нельзя отвязать водителя во время поездки."
-            )
+            raise InvalidDriverError("Нельзя отвязать водителя во время поездки.")
 
         driver.assigned_vehicle = None
         del self.assigned_drivers[driver_id]
@@ -538,9 +470,7 @@ class Fleet:
     def register_trip(self, trip):
         """Добавляет поездку в историю автопарка."""
         if trip.vehicle.vehicle_id not in self.vehicles:
-            raise InvalidVehicleError(
-                "Транспорт поездки не принадлежит этому автопарку."
-            )
+            raise InvalidVehicleError("Транспорт поездки не принадлежит этому автопарку.")
         if trip in self.trip_history:
             raise ValueError("Поездка уже зарегистрирована.")
 
@@ -548,27 +478,16 @@ class Fleet:
 
     def get_vehicle_trips(self, vehicle_id: str):
         """Возвращает поездки конкретного автомобиля."""
-        return [
-            trip
-            for trip in self.trip_history
-            if trip.vehicle.vehicle_id == vehicle_id
-        ]
+        return [trip for trip in self.trip_history if trip.vehicle.vehicle_id == vehicle_id]
 
     def get_vehicles_by_fuel(self, fuel_type: str):
         """Фильтрует транспорт по типу топлива."""
-        return [
-            vehicle
-            for vehicle in self.vehicles.values()
-            if vehicle.fuel_type == fuel_type
-        ]
+        return [vehicle for vehicle in self.vehicles.values() if vehicle.fuel_type == fuel_type]
 
     def calculate_total_capacity(self):
         """Считает суммарную грузоподъёмность автопарка."""
         return round(
-            sum(
-                vehicle.capacity_kg
-                for vehicle in self.vehicles.values()
-            ),
+            sum(vehicle.capacity_kg for vehicle in self.vehicles.values()),
             2,
         )
 
@@ -578,27 +497,18 @@ class Fleet:
             return 0.0
 
         return round(
-            sum(
-                vehicle.mileage_km
-                for vehicle in self.vehicles.values()
-            ) / len(self.vehicles),
+            sum(vehicle.mileage_km for vehicle in self.vehicles.values()) / len(self.vehicles),
             2,
         )
 
     def get_vehicles_needing_inspection(self):
         """Находит автомобили, которым нужна проверка."""
-        return [
-            vehicle
-            for vehicle in self.vehicles.values()
-            if vehicle.needs_inspection()
-        ]
+        return [vehicle for vehicle in self.vehicles.values() if vehicle.needs_inspection()]
 
     def add_maintenance_record(self, record):
         """Сохраняет запись о техническом обслуживании."""
         if record.vehicle.vehicle_id not in self.vehicles:
-            raise InvalidVehicleError(
-                "Транспорт не принадлежит этому автопарку."
-            )
+            raise InvalidVehicleError("Транспорт не принадлежит этому автопарку.")
 
         self.maintenance_records.append(record)
 
@@ -609,9 +519,7 @@ class Fleet:
     def deactivate(self):
         """Отключает автопарк для новых назначений."""
         if self.get_unavailable_vehicles():
-            raise VehicleUnavailableError(
-                "Нельзя отключить автопарк с занятыми автомобилями."
-            )
+            raise VehicleUnavailableError("Нельзя отключить автопарк с занятыми автомобилями.")
 
         self.is_active = False
 
@@ -689,18 +597,12 @@ class Warehouse:
         """Ищет грузы по названию."""
         search_name = name.lower()
 
-        return [
-            cargo
-            for cargo in self.cargos.values()
-            if search_name in cargo.name.lower()
-        ]
+        return [cargo for cargo in self.cargos.values() if search_name in cargo.name.lower()]
 
     def get_free_capacity(self):
         """Вычисляет свободную вместимость с учётом резерва."""
         return round(
-            self.capacity_kg
-            - self.used_capacity_kg
-            - self.reserved_capacity_kg,
+            self.capacity_kg - self.used_capacity_kg - self.reserved_capacity_kg,
             2,
         )
 
@@ -737,10 +639,7 @@ class Warehouse:
     def get_total_cargo_value(self):
         """Считает суммарную объявленную стоимость грузов."""
         return round(
-            sum(
-                cargo.declared_value
-                for cargo in self.cargos.values()
-            ),
+            sum(cargo.declared_value for cargo in self.cargos.values()),
             2,
         )
 
@@ -762,9 +661,7 @@ class Warehouse:
     def close_warehouse(self):
         """Закрывает склад для новых операций."""
         if self.cargos:
-            raise DeliveryError(
-                "Нельзя закрыть склад, пока на нём остаются грузы."
-            )
+            raise DeliveryError("Нельзя закрыть склад, пока на нём остаются грузы.")
 
         self.is_open = False
 
@@ -828,9 +725,7 @@ class Department:
     def assign_manager(self, manager):
         """Назначает руководителя подразделения."""
         if manager not in self.employees:
-            raise ValueError(
-                "Руководитель должен быть сотрудником подразделения."
-            )
+            raise ValueError("Руководитель должен быть сотрудником подразделения.")
 
         self.manager = manager
 
@@ -868,10 +763,7 @@ class Department:
     def calculate_payroll(self):
         """Считает сумму зарплат сотрудников подразделения."""
         return round(
-            sum(
-                getattr(employee, "salary", 0)
-                for employee in self.employees
-            ),
+            sum(getattr(employee, "salary", 0) for employee in self.employees),
             2,
         )
 
@@ -888,14 +780,10 @@ class Department:
         employee = self.find_employee(employee_id)
 
         if employee is None:
-            raise InvalidDriverError(
-                "Сотрудник не найден в этом подразделении."
-            )
+            raise InvalidDriverError("Сотрудник не найден в этом подразделении.")
 
         if not callable(getattr(employee, "assign_task", None)):
-            raise InvalidDriverError(
-                "Сотрудник не поддерживает назначение задач."
-            )
+            raise InvalidDriverError("Сотрудник не поддерживает назначение задач.")
 
         employee.assign_task(task)
 
@@ -913,9 +801,7 @@ class Department:
     def deactivate(self):
         """Деактивирует подразделение."""
         if self.employees:
-            raise ValueError(
-                "Перед отключением подразделения необходимо распределить сотрудников."
-            )
+            raise ValueError("Перед отключением подразделения необходимо распределить сотрудников.")
 
         self.is_active = False
 
@@ -978,22 +864,16 @@ class Branch:
     def assign_manager(self, manager):
         """Назначает управляющего филиалом."""
         if manager not in self.employees:
-            raise ValueError(
-                "Управляющий должен числиться в этом филиале."
-            )
+            raise ValueError("Управляющий должен числиться в этом филиале.")
 
         self.manager = manager
 
     def add_vehicle(self, vehicle):
         """Закрепляет транспортное средство за филиалом."""
         if not vehicle.is_available:
-            raise VehicleUnavailableError(
-                "Нельзя закрепить занятый транспорт."
-            )
+            raise VehicleUnavailableError("Нельзя закрепить занятый транспорт.")
         if vehicle in self.vehicles:
-            raise InvalidVehicleError(
-                "Транспорт уже закреплён за филиалом."
-            )
+            raise InvalidVehicleError("Транспорт уже закреплён за филиалом.")
 
         self.vehicles.append(vehicle)
 
@@ -1002,9 +882,7 @@ class Branch:
         if vehicle not in self.vehicles:
             return False
         if not vehicle.is_available:
-            raise VehicleUnavailableError(
-                "Нельзя убрать транспорт во время поездки."
-            )
+            raise VehicleUnavailableError("Нельзя убрать транспорт во время поездки.")
 
         self.vehicles.remove(vehicle)
         return True
@@ -1021,9 +899,7 @@ class Branch:
         for warehouse in self.warehouses:
             if warehouse.warehouse_id == warehouse_id:
                 if warehouse.cargos:
-                    raise DeliveryError(
-                        "Нельзя удалить склад с хранящимися грузами."
-                    )
+                    raise DeliveryError("Нельзя удалить склад с хранящимися грузами.")
 
                 self.warehouses.remove(warehouse)
                 return True
@@ -1048,21 +924,14 @@ class Branch:
     def calculate_available_capacity(self):
         """Считает грузоподъёмность свободного транспорта."""
         return round(
-            sum(
-                vehicle.capacity_kg
-                for vehicle in self.vehicles
-                if vehicle.is_available
-            ),
+            sum(vehicle.capacity_kg for vehicle in self.vehicles if vehicle.is_available),
             2,
         )
 
     def calculate_payroll(self):
         """Считает фонд оплаты труда филиала."""
         return round(
-            sum(
-                getattr(employee, "salary", 0)
-                for employee in self.employees
-            ),
+            sum(getattr(employee, "salary", 0) for employee in self.employees),
             2,
         )
 
@@ -1087,9 +956,7 @@ class Branch:
     def deactivate(self):
         """Деактивирует филиал, если в нём нет занятых машин."""
         if any(not vehicle.is_available for vehicle in self.vehicles):
-            raise VehicleUnavailableError(
-                "Нельзя закрыть филиал с работающим транспортом."
-            )
+            raise VehicleUnavailableError("Нельзя закрыть филиал с работающим транспортом.")
 
         self.is_active = False
 
@@ -1158,10 +1025,7 @@ class CompanyPolicy:
             return False
         if check_date < self.effective_from:
             return False
-        if (
-            self.effective_until is not None
-            and check_date > self.effective_until
-        ):
+        if self.effective_until is not None and check_date > self.effective_until:
             return False
 
         return True
@@ -1173,11 +1037,7 @@ class CompanyPolicy:
         Пустой список означает, что нарушений не найдено.
         """
         violations = []
-        cargos = [
-            item.cargo
-            for item in order.items
-            for _ in range(item.quantity)
-        ]
+        cargos = [item.cargo for item in order.items for _ in range(item.quantity)]
 
         max_weight = self.get_rule("max_order_weight_kg")
         if max_weight is not None and order.total_weight() > max_weight:
@@ -1188,10 +1048,7 @@ class CompanyPolicy:
             violations.append("В заказе слишком много позиций.")
 
         max_value = self.get_rule("max_order_value")
-        if (
-            max_value is not None
-            and order.calculate_items_cost() > max_value
-        ):
+        if max_value is not None and order.calculate_items_cost() > max_value:
             violations.append("Превышена максимальная стоимость заказа.")
 
         if self.get_rule("require_packed_cargo", False):
@@ -1200,29 +1057,18 @@ class CompanyPolicy:
 
         if not self.get_rule("allow_dangerous_cargo", True):
             if any(hasattr(cargo, "hazard_class") for cargo in cargos):
-                violations.append(
-                    "Перевозка опасных грузов запрещена правилом."
-                )
+                violations.append("Перевозка опасных грузов запрещена правилом.")
 
         if not self.get_rule("allow_oversized_cargo", True):
             if any(hasattr(cargo, "length_m") for cargo in cargos):
-                violations.append(
-                    "Перевозка негабаритных грузов запрещена правилом."
-                )
+                violations.append("Перевозка негабаритных грузов запрещена правилом.")
 
         minimum_notice_days = self.get_rule("minimum_notice_days")
-        if (
-            minimum_notice_days is not None
-            and order.requested_delivery_date is not None
-        ):
-            days_notice = (
-                order.requested_delivery_date - date.today()
-            ).days
+        if minimum_notice_days is not None and order.requested_delivery_date is not None:
+            days_notice = (order.requested_delivery_date - date.today()).days
 
             if days_notice < minimum_notice_days:
-                violations.append(
-                    "Заказ оформлен слишком близко к дате доставки."
-                )
+                violations.append("Заказ оформлен слишком близко к дате доставки.")
 
         return violations
 
@@ -1236,16 +1082,13 @@ class CompanyPolicy:
     def apply_to_order(self, order):
         """Проверяет заказ и регистрирует применение правила."""
         if not self.is_effective():
-            raise InvalidOrderStatusError(
-                "Правило не действует на текущую дату."
-            )
+            raise InvalidOrderStatusError("Правило не действует на текущую дату.")
 
         violations = self.validate_order(order)
 
         if violations:
             raise InvalidOrderStatusError(
-                "Заказ не соответствует правилам: "
-                + "; ".join(violations)
+                "Заказ не соответствует правилам: " + "; ".join(violations)
             )
 
         self.applied_count += 1
@@ -1263,16 +1106,9 @@ class CompanyPolicy:
     def extend_validity(self, new_date: date):
         """Продлевает срок действия правила."""
         if new_date < self.effective_from:
-            raise ValueError(
-                "Дата окончания не может быть раньше даты начала."
-            )
-        if (
-            self.effective_until is not None
-            and new_date < self.effective_until
-        ):
-            raise ValueError(
-                "Продление не должно сокращать срок действия правила."
-            )
+            raise ValueError("Дата окончания не может быть раньше даты начала.")
+        if self.effective_until is not None and new_date < self.effective_until:
+            raise ValueError("Продление не должно сокращать срок действия правила.")
 
         self.effective_until = new_date
 
@@ -1342,9 +1178,7 @@ class TransportCompany:
         if branch is None:
             return False
         if branch.employees or branch.vehicles or branch.warehouses:
-            raise ValueError(
-                "Перед удалением филиала необходимо освободить его ресурсы."
-            )
+            raise ValueError("Перед удалением филиала необходимо освободить его ресурсы.")
 
         del self.branches[branch_id]
         return True
@@ -1356,9 +1190,7 @@ class TransportCompany:
     def add_department(self, department: Department):
         """Добавляет подразделение компании."""
         if department.department_id in self.departments:
-            raise ValueError(
-                "Подразделение с таким идентификатором уже существует."
-            )
+            raise ValueError("Подразделение с таким идентификатором уже существует.")
 
         self.departments[department.department_id] = department
 
@@ -1369,9 +1201,7 @@ class TransportCompany:
         if department is None:
             return False
         if department.employees:
-            raise ValueError(
-                "Нельзя удалить подразделение с сотрудниками."
-            )
+            raise ValueError("Нельзя удалить подразделение с сотрудниками.")
 
         del self.departments[department_id]
         return True
@@ -1395,14 +1225,10 @@ class TransportCompany:
 
     def register_order(self, order):
         """Регистрирует заказ после проверки клиента."""
-        customer = self.customer_registry.get_customer(
-            order.customer.customer_id
-        )
+        customer = self.customer_registry.get_customer(order.customer.customer_id)
 
         if customer is not order.customer:
-            raise InvalidCustomerError(
-                "Заказ принадлежит незарегистрированному клиенту."
-            )
+            raise InvalidCustomerError("Заказ принадлежит незарегистрированному клиенту.")
 
         self.order_registry.register(order)
 
@@ -1443,9 +1269,7 @@ class TransportCompany:
                 violations = policy.validate_order(order)
 
                 for violation in violations:
-                    all_violations.append(
-                        f"{policy.title}: {violation}"
-                    )
+                    all_violations.append(f"{policy.title}: {violation}")
 
         return all_violations
 
@@ -1459,10 +1283,7 @@ class TransportCompany:
         violations = self.validate_order_by_policies(order)
 
         if violations:
-            raise InvalidOrderStatusError(
-                "Заказ не прошёл проверку: "
-                + "; ".join(violations)
-            )
+            raise InvalidOrderStatusError("Заказ не прошёл проверку: " + "; ".join(violations))
 
         order.submit_for_approval()
 
@@ -1473,9 +1294,7 @@ class TransportCompany:
         if order is None:
             raise InvalidOrderStatusError("Заказ не найден.")
         if trip.vehicle.vehicle_id not in self.fleet.vehicles:
-            raise InvalidVehicleError(
-                "Транспорт поездки не входит в автопарк компании."
-            )
+            raise InvalidVehicleError("Транспорт поездки не входит в автопарк компании.")
 
         order.assign_trip(trip)
         self.fleet.register_trip(trip)
@@ -1513,20 +1332,14 @@ class TransportCompany:
 
     def calculate_branch_count(self):
         """Считает количество активных филиалов."""
-        return sum(
-            1 for branch in self.branches.values()
-            if branch.is_active
-        )
+        return sum(1 for branch in self.branches.values() if branch.is_active)
 
     def calculate_total_warehouse_capacity(self):
         """Считает общую вместимость всех складов компании."""
         total = 0.0
 
         for branch in self.branches.values():
-            total += sum(
-                warehouse.capacity_kg
-                for warehouse in branch.warehouses
-            )
+            total += sum(warehouse.capacity_kg for warehouse in branch.warehouses)
 
         return round(total, 2)
 
@@ -1555,12 +1368,8 @@ class TransportCompany:
             "available_vehicles": len(self.get_available_vehicles()),
             "orders": self.order_registry.count_orders(),
             "active_orders": len(self.get_active_orders()),
-            "total_vehicle_capacity_kg": (
-                self.calculate_total_vehicle_capacity()
-            ),
-            "warehouse_capacity_kg": (
-                self.calculate_total_warehouse_capacity()
-            ),
+            "total_vehicle_capacity_kg": (self.calculate_total_vehicle_capacity()),
+            "warehouse_capacity_kg": (self.calculate_total_warehouse_capacity()),
         }
 
     def add_financial_report(self, report):
@@ -1586,16 +1395,10 @@ class TransportCompany:
 
     def deactivate(self):
         """Отключает компанию, если нет активных поездок."""
-        active_trips = [
-            trip
-            for trip in self.fleet.trip_history
-            if trip.status == "in_progress"
-        ]
+        active_trips = [trip for trip in self.fleet.trip_history if trip.status == "in_progress"]
 
         if active_trips:
-            raise DeliveryError(
-                "Нельзя отключить компанию во время активных поездок."
-            )
+            raise DeliveryError("Нельзя отключить компанию во время активных поездок.")
 
         self.is_active = False
 

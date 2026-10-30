@@ -1,11 +1,10 @@
-
 """Маршруты, транспортные заказы, доставки и рейсы."""
 
 from datetime import date, datetime
 
-from cargo import Cargo
-from vehicles import Vehicle
-from exceptions import (
+from .cargo import Cargo
+from .vehicles import Vehicle
+from .exceptions import (
     InvalidRouteError,
     InvalidOrderStatusError,
     InvalidCargoError,
@@ -206,8 +205,12 @@ class TransportOrder:
     """Заказ клиента на перевозку."""
 
     ALLOWED_STATUSES = {
-        "new", "pending", "approved", "in_transit",
-        "delivered", "cancelled",
+        "new",
+        "pending",
+        "approved",
+        "in_transit",
+        "delivered",
+        "cancelled",
     }
 
     def __init__(
@@ -219,9 +222,7 @@ class TransportOrder:
         created_at: date | None = None,
     ):
         if not order_id or not origin or not destination:
-            raise InvalidOrderStatusError(
-                "ID заказа, отправление и назначение обязательны."
-            )
+            raise InvalidOrderStatusError("ID заказа, отправление и назначение обязательны.")
         if origin == destination:
             raise InvalidRouteError("Отправление и назначение совпадают.")
 
@@ -316,9 +317,7 @@ class TransportOrder:
     def assign_trip(self, trip):
         """Связывает заказ с рейсом."""
         if self.status != "approved":
-            raise InvalidOrderStatusError(
-                "Назначить рейс можно только подтверждённому заказу."
-            )
+            raise InvalidOrderStatusError("Назначить рейс можно только подтверждённому заказу.")
         if self.assigned_trip is not None:
             raise InvalidOrderStatusError("Заказ уже назначен на рейс.")
         trip.add_order(self)
@@ -332,9 +331,7 @@ class TransportOrder:
     def set_delivery_deadline(self, deadline: date):
         """Устанавливает желаемую дату доставки."""
         if deadline < self.created_at:
-            raise InvalidOrderStatusError(
-                "Дата доставки не может быть раньше создания заказа."
-            )
+            raise InvalidOrderStatusError("Дата доставки не может быть раньше создания заказа.")
         self.requested_delivery_date = deadline
 
 
@@ -362,9 +359,7 @@ class Shipment:
 
     def check_readiness(self) -> bool:
         """Проверяет готовность отправления к перевозке."""
-        return bool(self.items) and all(
-            item.cargo.is_packed for item in self.items
-        )
+        return bool(self.items) and all(item.cargo.is_packed for item in self.items)
 
     def prepare(self):
         """Подтверждает готовность отправления."""
@@ -503,9 +498,7 @@ class Trip:
     def add_order(self, order: TransportOrder):
         """Добавляет подтверждённый заказ в рейс."""
         if order.status != "approved":
-            raise InvalidOrderStatusError(
-                "В рейс можно добавить только подтверждённый заказ."
-            )
+            raise InvalidOrderStatusError("В рейс можно добавить только подтверждённый заказ.")
         if order.assigned_trip is not None and order.assigned_trip is not self:
             raise InvalidOrderStatusError("Заказ уже назначен на другой рейс.")
         if order.route is not None and order.route is not self.route:
@@ -532,9 +525,7 @@ class Trip:
 
         assigned_vehicle = getattr(self.driver, "assigned_vehicle", None)
         if assigned_vehicle is not self.vehicle:
-            raise DriverUnavailableError(
-                "Водителю не назначено это транспортное средство."
-            )
+            raise DriverUnavailableError("Водителю не назначено это транспортное средство.")
 
         self.actual_departure = datetime.now()
         self.driver.start_trip()
@@ -564,9 +555,7 @@ class Trip:
     def cancel(self, reason: str = ""):
         """Отменяет ещё не начатый рейс."""
         if self.status != "planned":
-            raise InvalidOrderStatusError(
-                "Начатый рейс нельзя отменить этим методом."
-            )
+            raise InvalidOrderStatusError("Начатый рейс нельзя отменить этим методом.")
         self.status = "cancelled"
         self.notes = f"{self.notes}\nПричина отмены: {reason}".strip()
 
@@ -574,9 +563,7 @@ class Trip:
         """Вычисляет фактическую длительность рейса."""
         if self.actual_departure is None or self.actual_arrival is None:
             return 0.0
-        seconds = (
-            self.actual_arrival - self.actual_departure
-        ).total_seconds()
+        seconds = (self.actual_arrival - self.actual_departure).total_seconds()
         return max(0.0, seconds / 3600)
 
     def calculate_average_speed(self) -> float:
@@ -642,9 +629,7 @@ class Delivery:
     def report_failure(self, reason: str):
         """Фиксирует неудачную попытку доставки."""
         if self.status == "delivered":
-            raise DeliveryError(
-                "Уже доставленную посылку нельзя отметить неудачной."
-            )
+            raise DeliveryError("Уже доставленную посылку нельзя отметить неудачной.")
         if not reason:
             raise DeliveryError("Укажите причину неудачной доставки.")
         self.failure_reason = reason
@@ -695,14 +680,9 @@ class Schedule:
         for existing in self.trips:
             if existing.status in {"completed", "cancelled"}:
                 continue
-            if (
-                existing.driver is trip.driver
-                or existing.vehicle is trip.vehicle
-            ):
+            if existing.driver is trip.driver or existing.vehicle is trip.vehicle:
                 if existing.departure_time == trip.departure_time:
-                    raise InvalidRouteError(
-                        "В это время водитель или транспорт уже назначен."
-                    )
+                    raise InvalidRouteError("В это время водитель или транспорт уже назначен.")
 
         self.trips.append(trip)
         self.trips.sort(key=lambda item: item.departure_time)
@@ -712,19 +692,14 @@ class Schedule:
         for trip in self.trips:
             if trip.trip_id == trip_id:
                 if trip.status != "planned":
-                    raise InvalidRouteError(
-                        "Можно удалить только ещё не начатый рейс."
-                    )
+                    raise InvalidRouteError("Можно удалить только ещё не начатый рейс.")
                 self.trips.remove(trip)
                 return True
         return False
 
     def get_trips_for_date(self, target_date: date) -> list[Trip]:
         """Возвращает рейсы, назначенные на выбранную дату."""
-        return [
-            trip for trip in self.trips
-            if trip.departure_time.date() == target_date
-        ]
+        return [trip for trip in self.trips if trip.departure_time.date() == target_date]
 
     def get_available_trips(self) -> list[Trip]:
         """Возвращает рейсы, которые ещё не начались."""

@@ -1,11 +1,6 @@
-"""Пакет классов системы управления транспортной компанией.
+"""Пакет классов системы управления транспортной компанией."""
 
-Можно импортировать классы напрямую из пакета:
-    from transport_company import TransportCompany, Driver, Truck
-
-Имя пакета определяется именем папки, в которой лежит этот файл.
-"""
-
+# Исключения
 from .exceptions import (
     TransportCompanyError,
     InvalidCustomerError,
@@ -21,6 +16,7 @@ from .exceptions import (
     DeliveryError,
 )
 
+# Люди
 from .people import (
     Person,
     Customer,
@@ -32,6 +28,7 @@ from .people import (
     Manager,
 )
 
+# Транспорт
 from .vehicles import (
     Vehicle,
     Truck,
@@ -45,6 +42,7 @@ from .vehicles import (
     FuelRecord,
 )
 
+# Грузы
 from .cargo import (
     Cargo,
     PerishableCargo,
@@ -55,6 +53,7 @@ from .cargo import (
     CargoDocument,
 )
 
+# Перевозки
 from .transport import (
     RoutePoint,
     Route,
@@ -67,6 +66,7 @@ from .transport import (
     Schedule,
 )
 
+# Финансы
 from .finance import (
     Payment,
     Invoice,
@@ -77,6 +77,7 @@ from .finance import (
     FinancialReport,
 )
 
+# Управление компанией
 from .company import (
     EmployeeRegistry,
     CustomerRegistry,
@@ -89,4 +90,74 @@ from .company import (
     TransportCompany,
 )
 
-__all__ = [name for name in globals() if not name.startswith("_")]
+__all__ = [
+    # Исключения
+    "TransportCompanyError",
+    "InvalidCustomerError",
+    "InvalidDriverError",
+    "InvalidVehicleError",
+    "VehicleUnavailableError",
+    "DriverUnavailableError",
+    "InvalidCargoError",
+    "CargoCapacityExceededError",
+    "InvalidRouteError",
+    "InvalidOrderStatusError",
+    "PaymentError",
+    "DeliveryError",
+    # Люди
+    "Person",
+    "Customer",
+    "CorporateCustomer",
+    "IndividualCustomer",
+    "Employee",
+    "Driver",
+    "Dispatcher",
+    "Manager",
+    # Транспорт
+    "Vehicle",
+    "Truck",
+    "Van",
+    "RefrigeratedTruck",
+    "Tanker",
+    "FlatbedTruck",
+    "Trailer",
+    "VehicleInspection",
+    "MaintenanceRecord",
+    "FuelRecord",
+    # Грузы
+    "Cargo",
+    "PerishableCargo",
+    "FragileCargo",
+    "DangerousCargo",
+    "OversizedCargo",
+    "CargoPackage",
+    "CargoDocument",
+    # Перевозки
+    "RoutePoint",
+    "Route",
+    "OrderItem",
+    "TransportOrder",
+    "Shipment",
+    "Stop",
+    "Trip",
+    "Delivery",
+    "Schedule",
+    # Финансы
+    "Payment",
+    "Invoice",
+    "Transaction",
+    "Expense",
+    "Budget",
+    "SalaryPayment",
+    "FinancialReport",
+    # Управление компанией
+    "EmployeeRegistry",
+    "CustomerRegistry",
+    "OrderRegistry",
+    "Fleet",
+    "Warehouse",
+    "Department",
+    "Branch",
+    "CompanyPolicy",
+    "TransportCompany",
+]

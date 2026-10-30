@@ -1,9 +1,8 @@
-
 """Финансовый модуль транспортной компании."""
 
 from datetime import date, datetime
 
-from exceptions import PaymentError
+from .exceptions import PaymentError
 
 
 class Payment:
@@ -161,12 +160,14 @@ class Invoice:
         # Сохраняем данные позиций на момент создания счёта.
         self.items = []
         for item in order.items:
-            self.items.append({
-                "item_id": item.item_id,
-                "description": item.cargo.name,
-                "quantity": item.quantity,
-                "unit_price": item.unit_price,
-            })
+            self.items.append(
+                {
+                    "item_id": item.item_id,
+                    "description": item.cargo.name,
+                    "quantity": item.quantity,
+                    "unit_price": item.unit_price,
+                }
+            )
 
         self.additional_charges = []
         self.payments = []
@@ -177,10 +178,7 @@ class Invoice:
     def calculate_subtotal(self):
         """Вычисляет стоимость всех позиций счёта."""
         return round(
-            sum(
-                item["quantity"] * item["unit_price"]
-                for item in self.items
-            ),
+            sum(item["quantity"] * item["unit_price"] for item in self.items),
             2,
         )
 
@@ -196,9 +194,7 @@ class Invoice:
     def calculate_total(self):
         """Вычисляет окончательную сумму счёта."""
         subtotal = self.calculate_subtotal()
-        charges = sum(
-            charge["amount"] for charge in self.additional_charges
-        )
+        charges = sum(charge["amount"] for charge in self.additional_charges)
         taxable_amount = max(
             0,
             subtotal + charges - self.discount_amount,
@@ -212,10 +208,12 @@ class Invoice:
         if not description or amount < 0:
             raise ValueError("Некорректное описание или сумма сбора.")
 
-        self.additional_charges.append({
-            "description": description,
-            "amount": round(float(amount), 2),
-        })
+        self.additional_charges.append(
+            {
+                "description": description,
+                "amount": round(float(amount), 2),
+            }
+        )
 
     def apply_discount(self, amount: float):
         """Устанавливает скидку на счёт."""
@@ -285,10 +283,7 @@ class Invoice:
     def is_overdue(self, check_date: date | None = None):
         """Проверяет, истёк ли срок оплаты."""
         check_date = check_date or date.today()
-        return (
-            self.status in ("issued", "partially_paid")
-            and check_date > self.due_date
-        )
+        return self.status in ("issued", "partially_paid") and check_date > self.due_date
 
     def update_due_date(self, new_date: date):
         """Изменяет срок оплаты."""
@@ -691,10 +686,7 @@ class FinancialReport:
         """Проверяет, входит ли дата в период отчёта."""
         record_date = self._to_date(value)
 
-        return (
-            record_date is not None
-            and self.period_start <= record_date <= self.period_end
-        )
+        return record_date is not None and self.period_start <= record_date <= self.period_end
 
     def add_payment(self, payment: Payment):
         """Добавляет оплату, совершённую в период отчёта."""
@@ -736,7 +728,8 @@ class FinancialReport:
         total = sum(
             payment.amount - payment.refunded_amount
             for payment in self.payments
-            if payment.status in (
+            if payment.status
+            in (
                 "completed",
                 "partially_refunded",
                 "refunded",
@@ -781,7 +774,8 @@ class FinancialReport:
         return sum(
             1
             for payment in self.payments
-            if payment.status in (
+            if payment.status
+            in (
                 "completed",
                 "partially_refunded",
                 "refunded",

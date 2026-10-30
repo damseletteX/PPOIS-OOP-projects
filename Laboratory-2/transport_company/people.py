@@ -1,4 +1,3 @@
-
 class Person:
     """Базовый класс человека."""
 
@@ -34,8 +33,7 @@ class Person:
 class Customer(Person):
     """Общий класс клиентов транспортной компании."""
 
-    def __init__(self, name: str, phone: str, address: str,
-                 email: str = ""):
+    def __init__(self, name: str, phone: str, address: str, email: str = ""):
         super().__init__(name, phone, email)
         if not address.strip():
             raise ValueError("Адрес не может быть пустым.")
@@ -82,8 +80,9 @@ class Customer(Person):
 class IndividualCustomer(Customer):
     """Частный клиент."""
 
-    def __init__(self, name: str, phone: str, address: str,
-                 email: str = "", passport_number: str = ""):
+    def __init__(
+        self, name: str, phone: str, address: str, email: str = "", passport_number: str = ""
+    ):
         super().__init__(name, phone, address, email)
         self.passport_number = passport_number.strip()
         self.preferred_contact = "phone"
@@ -111,8 +110,7 @@ class IndividualCustomer(Customer):
 class CorporateCustomer(Customer):
     """Организация, заказывающая перевозки."""
 
-    def __init__(self, name: str, phone: str, address: str,
-                 tax_number: str, email: str = ""):
+    def __init__(self, name: str, phone: str, address: str, tax_number: str, email: str = ""):
         super().__init__(name, phone, address, email)
         if not tax_number.strip():
             raise ValueError("Регистрационный номер обязателен.")
@@ -148,8 +146,7 @@ class CorporateCustomer(Customer):
 class Employee(Person):
     """Базовый класс сотрудника."""
 
-    def __init__(self, name: str, phone: str, employee_id: str,
-                 salary: float, email: str = ""):
+    def __init__(self, name: str, phone: str, employee_id: str, salary: float, email: str = ""):
         super().__init__(name, phone, email)
         if not employee_id.strip():
             raise ValueError("Табельный номер обязателен.")
@@ -191,10 +188,17 @@ class Employee(Person):
 class Driver(Employee):
     """Водитель транспортной компании."""
 
-    def __init__(self, name: str, phone: str, employee_id: str,
-                 salary: float, license_number: str,
-                 license_categories: list[str], experience_years: int,
-                 email: str = ""):
+    def __init__(
+        self,
+        name: str,
+        phone: str,
+        employee_id: str,
+        salary: float,
+        license_number: str,
+        license_categories: list[str],
+        experience_years: int,
+        email: str = "",
+    ):
         super().__init__(name, phone, employee_id, salary, email)
         if not license_number.strip():
             raise ValueError("Номер водительского удостоверения обязателен.")
@@ -261,8 +265,7 @@ class Driver(Employee):
 class Dispatcher(Employee):
     """Диспетчер, координирующий перевозки."""
 
-    def __init__(self, name: str, phone: str, employee_id: str,
-                 salary: float, email: str = ""):
+    def __init__(self, name: str, phone: str, employee_id: str, salary: float, email: str = ""):
         super().__init__(name, phone, employee_id, salary, email)
         self.managed_trips = []
         self.shift = "day"
@@ -300,8 +303,7 @@ class Dispatcher(Employee):
 class Manager(Employee):
     """Менеджер, отвечающий за клиентов и заказы."""
 
-    def __init__(self, name: str, phone: str, employee_id: str,
-                 salary: float, email: str = ""):
+    def __init__(self, name: str, phone: str, employee_id: str, salary: float, email: str = ""):
         super().__init__(name, phone, employee_id, salary, email)
         self.managed_customers = []
         self.approved_orders = []

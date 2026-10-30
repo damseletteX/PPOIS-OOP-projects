@@ -1,11 +1,9 @@
-
 """Классы грузов, упаковок и сопроводительных документов."""
 
 from datetime import date
 
-from exceptions import (
+from .exceptions import (
     InvalidCargoError,
-    CargoCapacityExceededError,
 )
 
 
@@ -65,9 +63,7 @@ class Cargo:
 
     def update_status(self, new_status: str):
         """Изменяет статус груза."""
-        allowed_statuses = {
-            "created", "packed", "in_transit", "delivered", "damaged"
-        }
+        allowed_statuses = {"created", "packed", "in_transit", "delivered", "damaged"}
         if new_status not in allowed_statuses:
             raise InvalidCargoError("Неизвестный статус груза.")
         self.status = new_status
@@ -123,13 +119,17 @@ class PerishableCargo(Cargo):
     """Скоропортящийся груз."""
 
     def __init__(
-        self, cargo_id, name, weight_kg, volume_m3,
-        expiry_date: date, storage_temperature_c: float,
-        declared_value=0.0, description="",
+        self,
+        cargo_id,
+        name,
+        weight_kg,
+        volume_m3,
+        expiry_date: date,
+        storage_temperature_c: float,
+        declared_value=0.0,
+        description="",
     ):
-        super().__init__(
-            cargo_id, name, weight_kg, volume_m3, declared_value, description
-        )
+        super().__init__(cargo_id, name, weight_kg, volume_m3, declared_value, description)
         if expiry_date < date.today():
             raise InvalidCargoError("Срок годности груза уже истёк.")
 
@@ -155,8 +155,7 @@ class PerishableCargo(Cargo):
         """Проверяет, подходит ли холодильный транспорт."""
         return (
             getattr(vehicle, "cooling_enabled", False)
-            and vehicle.min_temperature_c <= self.storage_temperature_c
-            <= vehicle.max_temperature_c
+            and vehicle.min_temperature_c <= self.storage_temperature_c <= vehicle.max_temperature_c
         )
 
     def days_until_expiry(self, today: date | None = None) -> int:
@@ -169,12 +168,16 @@ class FragileCargo(Cargo):
     """Хрупкий груз."""
 
     def __init__(
-        self, cargo_id, name, weight_kg, volume_m3,
-        fragility_level: int = 3, declared_value=0.0, description="",
+        self,
+        cargo_id,
+        name,
+        weight_kg,
+        volume_m3,
+        fragility_level: int = 3,
+        declared_value=0.0,
+        description="",
     ):
-        super().__init__(
-            cargo_id, name, weight_kg, volume_m3, declared_value, description
-        )
+        super().__init__(cargo_id, name, weight_kg, volume_m3, declared_value, description)
         if not 1 <= fragility_level <= 5:
             raise InvalidCargoError("Уровень хрупкости должен быть от 1 до 5.")
 
@@ -210,13 +213,17 @@ class DangerousCargo(Cargo):
     """Опасный груз."""
 
     def __init__(
-        self, cargo_id, name, weight_kg, volume_m3,
-        hazard_class: str, un_number: str,
-        declared_value=0.0, description="",
+        self,
+        cargo_id,
+        name,
+        weight_kg,
+        volume_m3,
+        hazard_class: str,
+        un_number: str,
+        declared_value=0.0,
+        description="",
     ):
-        super().__init__(
-            cargo_id, name, weight_kg, volume_m3, declared_value, description
-        )
+        super().__init__(cargo_id, name, weight_kg, volume_m3, declared_value, description)
         if not hazard_class or not un_number:
             raise InvalidCargoError("Укажите класс опасности и номер ООН.")
 
@@ -258,13 +265,18 @@ class OversizedCargo(Cargo):
     """Негабаритный груз."""
 
     def __init__(
-        self, cargo_id, name, weight_kg, volume_m3,
-        length_m: float, width_m: float, height_m: float,
-        declared_value=0.0, description="",
+        self,
+        cargo_id,
+        name,
+        weight_kg,
+        volume_m3,
+        length_m: float,
+        width_m: float,
+        height_m: float,
+        declared_value=0.0,
+        description="",
     ):
-        super().__init__(
-            cargo_id, name, weight_kg, volume_m3, declared_value, description
-        )
+        super().__init__(cargo_id, name, weight_kg, volume_m3, declared_value, description)
         if min(length_m, width_m, height_m) <= 0:
             raise InvalidCargoError("Габариты должны быть положительными.")
 
@@ -309,8 +321,11 @@ class CargoPackage:
     """Отдельная упаковка груза."""
 
     def __init__(
-        self, package_id: str, package_type: str,
-        weight_kg: float, label: str = "",
+        self,
+        package_id: str,
+        package_type: str,
+        weight_kg: float,
+        label: str = "",
     ):
         if not package_id or not package_type:
             raise InvalidCargoError("Укажите ID и тип упаковки.")
@@ -358,14 +373,16 @@ class CargoDocument:
     """Сопроводительный документ на груз."""
 
     def __init__(
-        self, document_id: str, cargo: Cargo,
-        document_type: str, issue_date: date,
-        issuer: str, expiry_date: date | None = None,
+        self,
+        document_id: str,
+        cargo: Cargo,
+        document_type: str,
+        issue_date: date,
+        issuer: str,
+        expiry_date: date | None = None,
     ):
         if not document_id or not document_type or not issuer:
-            raise InvalidCargoError(
-                "ID, тип документа и организация-выдаватель обязательны."
-            )
+            raise InvalidCargoError("ID, тип документа и организация-выдаватель обязательны.")
         if expiry_date is not None and expiry_date < issue_date:
             raise InvalidCargoError("Документ не может истекать до выдачи.")
 
