@@ -33,3 +33,4 @@ dist/
 *.spec
 *.egg-info/
 docs-site/
+DOCS/

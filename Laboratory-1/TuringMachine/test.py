@@ -1,6 +1,5 @@
 """Unit tests for TM.py (no CLI involved)."""
 import pytest
-
 from TM import (
     BLANK,
     DECREMENT_RULES,
