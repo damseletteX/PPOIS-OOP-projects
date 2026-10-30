@@ -5,7 +5,7 @@ on:
     branches: ["main"]
     paths:
       - "Laboratory-1/TuringMachine/**"
-      - ".github/workflows/turing-ci.yml"
+      - ".github/workflows/Lab1-Turing-CI.yml"
   pull_request:
     paths:
       - "Laboratory-1/TuringMachine/**"

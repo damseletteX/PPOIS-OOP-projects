@@ -19,5 +19,6 @@ Generated with [Doxygen](https://www.doxygen.nl/) and [pdoc](https://pdoc.dev/) 
 ## Releases
 
 [Laboratory work №1: Prebuilt *.exe for Win11](https://github.com/damseletteX/PPOIS/releases/tag/Lab1)
+
 [Laboratory work №2: Prebuilt *.exe for Win11](---)
 
