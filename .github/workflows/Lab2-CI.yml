@@ -1,5 +1,4 @@
-
-name: CI
+name: Lab2 CI
 
 on:
   push:
@@ -12,7 +11,7 @@ permissions:
   contents: read
 
 jobs:
-  quality-checks:
+  unit-tests:
     name: Tests, coverage and lint
     runs-on: ubuntu-latest
 
@@ -40,3 +39,4 @@ jobs:
 
       - name: Show coverage and enforce 90% minimum
         run: uv run --locked coverage report --fail-under=90
+  
