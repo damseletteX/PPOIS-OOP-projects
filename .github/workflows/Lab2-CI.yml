@@ -2,11 +2,13 @@ name: Lab2 CI
 
 on:
   push:
-    branches:
-      - "**"
+    branches: ["main"]
+    paths:
+      - "Laboratory-2/**"
+      - ".github/workflows/Lab2-CI.yml"
   pull_request:
-  workflow_dispatch:
-
+    paths:
+      - "Laboratory-2/**"
 permissions:
   contents: read
 
