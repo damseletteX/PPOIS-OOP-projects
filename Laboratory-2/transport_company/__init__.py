@@ -1,9 +1,92 @@
-"""Starter model for a transport company domain."""
-from .people import Person, Customer, BusinessCustomer, PrivateCustomer, Employee, Driver, Dispatcher, Mechanic, Manager, WarehouseWorker
-from .orders import TransportOrder, Shipment, CargoItem, Package, Pallet, DangerousGoodsDeclaration, TemperatureRequirement, DeliveryProof, ReturnRequest, OrderLine
-from .fleet import Vehicle, Truck, Van, Trailer, RefrigeratedUnit, VehicleInspection, MaintenanceRecord, FuelTransaction, Tyre, VehicleDocument
-from .routing import Route, RouteStop, Trip, TripAssignment, TollCharge, FuelStop, Geofence, TrafficIncident, DeliveryWindow, TrackingEvent
-from .finance import Invoice, Payment, RateCard, Discount, Expense, PayrollRecord, FuelBudget, InsurancePolicy, Claim, FinancialReport
-from .operations import Warehouse, StorageZone, LoadingPlan, Manifest, CustomsDeclaration, Permit, ServiceLevelAgreement, IncidentReport, Notification, AuditLogEntry
-from .exceptions import TransportCompanyError, InvalidOrderError, CustomerNotFoundError, VehicleUnavailableError, DriverUnavailableError, CapacityExceededError, RouteNotFeasibleError, DeliveryWindowError, PaymentProcessingError, InvoiceStateError, MaintenanceRequiredError, PermitExpiredError, DangerousGoodsComplianceError, TemperatureExcursionError, DuplicateReferenceError, ResourceConflictError
-from .associations import ASSOCIATIONS
+"""Пакет классов системы управления транспортной компанией.
+
+Можно импортировать классы напрямую из пакета:
+    from transport_company import TransportCompany, Driver, Truck
+
+Имя пакета определяется именем папки, в которой лежит этот файл.
+"""
+
+from .exceptions import (
+    TransportCompanyError,
+    InvalidCustomerError,
+    InvalidDriverError,
+    InvalidVehicleError,
+    VehicleUnavailableError,
+    DriverUnavailableError,
+    InvalidCargoError,
+    CargoCapacityExceededError,
+    InvalidRouteError,
+    InvalidOrderStatusError,
+    PaymentError,
+    DeliveryError,
+)
+
+from .people import (
+    Person,
+    Customer,
+    CorporateCustomer,
+    IndividualCustomer,
+    Employee,
+    Driver,
+    Dispatcher,
+    Manager,
+)
+
+from .vehicles import (
+    Vehicle,
+    Truck,
+    Van,
+    RefrigeratedTruck,
+    Tanker,
+    FlatbedTruck,
+    Trailer,
+    VehicleInspection,
+    MaintenanceRecord,
+    FuelRecord,
+)
+
+from .cargo import (
+    Cargo,
+    PerishableCargo,
+    FragileCargo,
+    DangerousCargo,
+    OversizedCargo,
+    CargoPackage,
+    CargoDocument,
+)
+
+from .transport import (
+    RoutePoint,
+    Route,
+    OrderItem,
+    TransportOrder,
+    Shipment,
+    Stop,
+    Trip,
+    Delivery,
+    Schedule,
+)
+
+from .finance import (
+    Payment,
+    Invoice,
+    Transaction,
+    Expense,
+    Budget,
+    SalaryPayment,
+    FinancialReport,
+)
+
+from .company import (
+    EmployeeRegistry,
+    CustomerRegistry,
+    OrderRegistry,
+    Fleet,
+    Warehouse,
+    Department,
+    Branch,
+    CompanyPolicy,
+    TransportCompany,
+)
+
+__all__ = [name for name in globals() if not name.startswith("_")]

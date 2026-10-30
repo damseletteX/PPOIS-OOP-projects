@@ -1,191 +1,347 @@
-"""Domain classes for the transport company. Standard library only."""
-from typing import Optional
 
 class Person:
-    """Domain entity: Person. Доменная сущность транспортной компании."""
-    def __init__(self, name: str, email: str, phone: str, address: str, related_entity_id: Optional[str] = None, notes: str = ''):
-        self.name = name
-        self.email = email
-        self.phone = phone
-        self.address = address
-        self.related_entity_id = related_entity_id
-        self.notes = notes
+    """Базовый класс человека."""
 
-    def update_contact_details(self) -> None:
-        """Выполняет доменную операцию класса."""
-        return 'Проверяет новые контактные данные и обновляет только переданные непустые значения; сохраняет прежние значения остальных полей.'
+    def __init__(self, name: str, phone: str, email: str = ""):
+        if not name.strip():
+            raise ValueError("Имя не может быть пустым.")
+        if not phone.strip():
+            raise ValueError("Телефон не может быть пустым.")
 
-    def verify_identity(self) -> None:
-        """Выполняет доменную операцию класса."""
-        return 'Проверяет наличие имени и контактных/идентификационных данных; при недостатке данных отклоняет операцию.'
+        self.name = name.strip()
+        self.phone = phone.strip()
+        self.email = email.strip()
+        self.is_active = True
 
-class Customer:
-    """Domain entity: Customer. Доменная сущность транспортной компании."""
-    def __init__(self, customer_code: str, billing_address: str, preferred_contact: str, credit_limit: float, related_entity_id: Optional[str] = None, notes: str = ''):
-        self.customer_code = customer_code
-        self.billing_address = billing_address
-        self.preferred_contact = preferred_contact
-        self.credit_limit = credit_limit
-        self.related_entity_id = related_entity_id
-        self.notes = notes
+    def update_phone(self, phone: str) -> None:
+        if not phone.strip():
+            raise ValueError("Телефон не может быть пустым.")
+        self.phone = phone.strip()
 
-    def place_order(self) -> None:
-        """Выполняет доменную операцию класса."""
-        return 'Проверяет кредитный лимит и обязательные данные заказа; формирует заказ со статусом «создан».'
+    def update_email(self, email: str) -> None:
+        self.email = email.strip()
 
-    def request_delivery_quote(self) -> None:
-        """Выполняет доменную операцию класса."""
-        return 'Принимает параметры груза и маршрута, проверяет их и возвращает расчётную стоимость.'
+    def deactivate(self) -> None:
+        self.is_active = False
 
-class BusinessCustomer:
-    """Domain entity: BusinessCustomer. Доменная сущность транспортной компании."""
-    def __init__(self, company_name: str, tax_number: str, contract_number: str, payment_terms_days: int, related_entity_id: Optional[str] = None, notes: str = ''):
-        self.company_name = company_name
-        self.tax_number = tax_number
-        self.contract_number = contract_number
-        self.payment_terms_days = payment_terms_days
-        self.related_entity_id = related_entity_id
-        self.notes = notes
+    def activate(self) -> None:
+        self.is_active = True
 
-    def approve_contract_terms(self) -> None:
-        """Выполняет доменную операцию класса."""
-        return 'Проверяет срок оплаты и наличие номера договора; переводит договор в состояние «одобрен».'
+    def contact_information(self) -> str:
+        return f"{self.name}, телефон: {self.phone}, email: {self.email}"
 
-    def request_monthly_statement(self) -> None:
-        """Выполняет доменную операцию класса."""
-        return 'Формирует перечень счетов и платежей клиента за запрошенный месяц.'
 
-class PrivateCustomer:
-    """Domain entity: PrivateCustomer. Доменная сущность транспортной компании."""
-    def __init__(self, identity_document: str, delivery_instructions: str, notification_opt_in: bool, customer_since: str, related_entity_id: Optional[str] = None, notes: str = ''):
-        self.identity_document = identity_document
-        self.delivery_instructions = delivery_instructions
-        self.notification_opt_in = notification_opt_in
-        self.customer_since = customer_since
-        self.related_entity_id = related_entity_id
-        self.notes = notes
+class Customer(Person):
+    """Общий класс клиентов транспортной компании."""
 
-    def confirm_delivery_address(self) -> None:
-        """Выполняет доменную операцию класса."""
-        return 'Проверяет адрес доставки и фиксирует подтверждение адреса.'
+    def __init__(self, name: str, phone: str, address: str,
+                 email: str = ""):
+        super().__init__(name, phone, email)
+        if not address.strip():
+            raise ValueError("Адрес не может быть пустым.")
 
-    def change_notification_preferences(self) -> None:
-        """Выполняет доменную операцию класса."""
-        return 'Изменяет согласие на уведомления и возвращает актуальное значение настройки.'
+        self.address = address.strip()
+        self.orders = []
+        self.discount_percent = 0
+        self.is_verified = False
 
-class Employee:
-    """Domain entity: Employee. Доменная сущность транспортной компании."""
-    def __init__(self, employee_number: str, hire_date: str, salary: float, employment_status: str, related_entity_id: Optional[str] = None, notes: str = ''):
-        self.employee_number = employee_number
-        self.hire_date = hire_date
+    def add_order(self, order) -> None:
+        if not self.is_active:
+            raise ValueError("Неактивный клиент не может оформлять заказы.")
+        if order in self.orders:
+            raise ValueError("Этот заказ уже добавлен клиенту.")
+        self.orders.append(order)
+
+    def remove_order(self, order) -> None:
+        if order not in self.orders:
+            raise ValueError("Заказ не найден у этого клиента.")
+        self.orders.remove(order)
+
+    def verify_customer(self) -> None:
+        self.is_verified = True
+
+    def set_discount(self, percent: float) -> None:
+        if not 0 <= percent <= 100:
+            raise ValueError("Скидка должна быть от 0 до 100%.")
+        self.discount_percent = percent
+
+    def calculate_discount(self, amount: float) -> float:
+        if amount < 0:
+            raise ValueError("Сумма не может быть отрицательной.")
+        return amount * self.discount_percent / 100
+
+    def get_order_count(self) -> int:
+        return len(self.orders)
+
+    def change_address(self, address: str) -> None:
+        if not address.strip():
+            raise ValueError("Адрес не может быть пустым.")
+        self.address = address.strip()
+
+
+class IndividualCustomer(Customer):
+    """Частный клиент."""
+
+    def __init__(self, name: str, phone: str, address: str,
+                 email: str = "", passport_number: str = ""):
+        super().__init__(name, phone, address, email)
+        self.passport_number = passport_number.strip()
+        self.preferred_contact = "phone"
+        self.completed_orders = 0
+
+    def set_preferred_contact(self, method: str) -> None:
+        if method not in ("phone", "email"):
+            raise ValueError("Способ связи: phone или email.")
+        if method == "email" and not self.email:
+            raise ValueError("Для связи по email укажите адрес.")
+        self.preferred_contact = method
+
+    def record_completed_order(self) -> None:
+        self.completed_orders += 1
+
+    def is_regular_customer(self) -> bool:
+        return self.completed_orders >= 5
+
+    def update_passport(self, passport_number: str) -> None:
+        if not passport_number.strip():
+            raise ValueError("Номер документа не может быть пустым.")
+        self.passport_number = passport_number.strip()
+
+
+class CorporateCustomer(Customer):
+    """Организация, заказывающая перевозки."""
+
+    def __init__(self, name: str, phone: str, address: str,
+                 tax_number: str, email: str = ""):
+        super().__init__(name, phone, address, email)
+        if not tax_number.strip():
+            raise ValueError("Регистрационный номер обязателен.")
+
+        self.tax_number = tax_number.strip()
+        self.contact_person = ""
+        self.contract_numbers = []
+        self.credit_limit = 0.0
+
+    def set_contact_person(self, name: str) -> None:
+        if not name.strip():
+            raise ValueError("Укажите контактное лицо.")
+        self.contact_person = name.strip()
+
+    def add_contract(self, contract_number: str) -> None:
+        if not contract_number.strip():
+            raise ValueError("Номер договора не может быть пустым.")
+        if contract_number in self.contract_numbers:
+            raise ValueError("Такой договор уже зарегистрирован.")
+        self.contract_numbers.append(contract_number)
+
+    def set_credit_limit(self, amount: float) -> None:
+        if amount < 0:
+            raise ValueError("Кредитный лимит не может быть отрицательным.")
+        self.credit_limit = amount
+
+    def can_pay_later(self, amount: float, debt: float = 0.0) -> bool:
+        if amount < 0 or debt < 0:
+            raise ValueError("Сумма и задолженность не могут быть отрицательными.")
+        return debt + amount <= self.credit_limit
+
+
+class Employee(Person):
+    """Базовый класс сотрудника."""
+
+    def __init__(self, name: str, phone: str, employee_id: str,
+                 salary: float, email: str = ""):
+        super().__init__(name, phone, email)
+        if not employee_id.strip():
+            raise ValueError("Табельный номер обязателен.")
+        if salary < 0:
+            raise ValueError("Зарплата не может быть отрицательной.")
+
+        self.employee_id = employee_id.strip()
         self.salary = salary
-        self.employment_status = employment_status
-        self.related_entity_id = related_entity_id
-        self.notes = notes
+        self.department = "Transport"
+        self.is_available = True
+        self.assigned_tasks = []
 
-    def request_leave(self) -> None:
-        """Выполняет доменную операцию класса."""
-        return 'Проверяет статус сотрудника и отсутствие пересекающегося отпуска; регистрирует заявку.'
+    def assign_task(self, task: str) -> None:
+        if not self.is_active:
+            raise ValueError("Нельзя назначить задачу неактивному сотруднику.")
+        if not task.strip():
+            raise ValueError("Описание задачи не может быть пустым.")
+        self.assigned_tasks.append(task.strip())
+        self.is_available = False
 
-    def record_performance_review(self) -> None:
-        """Выполняет доменную операцию класса."""
-        return 'Сохраняет оценку, дату и комментарий к результатам работы сотрудника.'
+    def complete_task(self, task: str) -> None:
+        if task not in self.assigned_tasks:
+            raise ValueError("Такая задача сотруднику не назначена.")
+        self.assigned_tasks.remove(task)
+        self.is_available = len(self.assigned_tasks) == 0
 
-class Driver:
-    """Domain entity: Driver. Доменная сущность транспортной компании."""
-    def __init__(self, license_number: str, license_category: str, license_expiry: str, hours_driven_today: float, related_entity_id: Optional[str] = None, notes: str = ''):
-        self.license_number = license_number
-        self.license_category = license_category
-        self.license_expiry = license_expiry
-        self.hours_driven_today = hours_driven_today
-        self.related_entity_id = related_entity_id
-        self.notes = notes
+    def change_department(self, department: str) -> None:
+        if not department.strip():
+            raise ValueError("Название отдела не может быть пустым.")
+        self.department = department.strip()
 
-    def accept_assignment(self) -> None:
-        """Выполняет доменную операцию класса."""
-        return 'Проверяет действительность водительского удостоверения, категорию и допустимое время управления; принимает назначение.'
+    def calculate_annual_salary(self) -> float:
+        return self.salary * 12
 
-    def record_driver_inspection(self) -> None:
-        """Выполняет доменную операцию класса."""
-        return 'Фиксирует предрейсовую проверку водителя и выявленные замечания.'
+    def is_ready_for_work(self) -> bool:
+        return self.is_active and self.is_available
 
-    def report_fatigue(self) -> None:
-        """Выполняет доменную операцию класса."""
-        return 'Регистрирует усталость водителя и помечает его недоступным до подтверждения готовности.'
 
-class Dispatcher:
-    """Domain entity: Dispatcher. Доменная сущность транспортной компании."""
-    def __init__(self, dispatch_area: str, shift_start: str, shift_end: str, active_assignments: int, related_entity_id: Optional[str] = None, notes: str = ''):
-        self.dispatch_area = dispatch_area
-        self.shift_start = shift_start
-        self.shift_end = shift_end
-        self.active_assignments = active_assignments
-        self.related_entity_id = related_entity_id
-        self.notes = notes
+class Driver(Employee):
+    """Водитель транспортной компании."""
 
-    def assign_vehicle_to_trip(self) -> None:
-        """Выполняет доменную операцию класса."""
-        return 'Проверяет доступность и пригодность машины для рейса; закрепляет транспорт за рейсом.'
+    def __init__(self, name: str, phone: str, employee_id: str,
+                 salary: float, license_number: str,
+                 license_categories: list[str], experience_years: int,
+                 email: str = ""):
+        super().__init__(name, phone, employee_id, salary, email)
+        if not license_number.strip():
+            raise ValueError("Номер водительского удостоверения обязателен.")
+        if experience_years < 0:
+            raise ValueError("Стаж не может быть отрицательным.")
+        if not license_categories:
+            raise ValueError("Укажите хотя бы одну категорию прав.")
 
-    def reassign_trip(self) -> None:
-        """Выполняет доменную операцию класса."""
-        return 'Снимает прежнее назначение и назначает доступный альтернативный ресурс, сохраняя историю изменения.'
+        self.license_number = license_number.strip()
+        self.license_categories = set(license_categories)
+        self.experience_years = experience_years
+        self.assigned_vehicle = None
+        self.completed_trips = 0
+        self.is_on_trip = False
 
-    def resolve_dispatch_conflict(self) -> None:
-        """Выполняет доменную операцию класса."""
-        return 'Выявляет двойное назначение водителя/машины и оставляет только непротиворечивое назначение.'
+    def can_drive_category(self, category: str) -> bool:
+        return category in self.license_categories
 
-class Mechanic:
-    """Domain entity: Mechanic. Доменная сущность транспортной компании."""
-    def __init__(self, specialization: str, certification_code: str, workshop_id: str, open_work_orders: int, related_entity_id: Optional[str] = None, notes: str = ''):
-        self.specialization = specialization
-        self.certification_code = certification_code
-        self.workshop_id = workshop_id
-        self.open_work_orders = open_work_orders
-        self.related_entity_id = related_entity_id
-        self.notes = notes
+    def assign_vehicle(self, vehicle) -> None:
+        if not self.is_ready_for_work():
+            raise ValueError("Водитель сейчас недоступен.")
+        if self.is_on_trip:
+            raise ValueError("Водитель уже находится в рейсе.")
+        if not getattr(vehicle, "is_available", False):
+            raise ValueError("Транспортное средство недоступно.")
 
-    def diagnose_vehicle_fault(self) -> None:
-        """Выполняет доменную операцию класса."""
-        return 'Сопоставляет симптомы с профилем механика и формирует перечень вероятных неисправностей.'
+        required_category = getattr(vehicle, "required_license_category", None)
+        if required_category and not self.can_drive_category(required_category):
+            raise ValueError("У водителя нет нужной категории прав.")
 
-    def complete_repair_job(self) -> None:
-        """Выполняет доменную операцию класса."""
-        return 'Проверяет выполненные работы и стоимость, закрывает заказ-наряд и обновляет доступность транспорта.'
+        self.assigned_vehicle = vehicle
 
-class Manager:
-    """Domain entity: Manager. Доменная сущность транспортной компании."""
-    def __init__(self, department: str, approval_limit: float, management_level: int, reports_to: str, related_entity_id: Optional[str] = None, notes: str = ''):
-        self.department = department
-        self.approval_limit = approval_limit
-        self.management_level = management_level
-        self.reports_to = reports_to
-        self.related_entity_id = related_entity_id
-        self.notes = notes
+    def start_trip(self) -> None:
+        if not self.is_ready_for_work():
+            raise ValueError("Водитель не готов к работе.")
+        if self.assigned_vehicle is None:
+            raise ValueError("Сначала назначьте транспорт.")
+        if self.is_on_trip:
+            raise ValueError("Водитель уже находится в рейсе.")
 
-    def approve_expense(self) -> None:
-        """Выполняет доменную операцию класса."""
-        return 'Сравнивает сумму расхода с лимитом полномочий менеджера; утверждает расход или отклоняет его.'
+        self.is_on_trip = True
+        self.is_available = False
+        self.assigned_vehicle.is_available = False
 
-    def review_operational_metrics(self) -> None:
-        """Выполняет доменную операцию класса."""
-        return 'Рассчитывает и возвращает сводные показатели выполнения рейсов, затрат и своевременности.'
+    def finish_trip(self) -> None:
+        if not self.is_on_trip:
+            raise ValueError("У водителя нет активного рейса.")
 
-class WarehouseWorker:
-    """Domain entity: WarehouseWorker. Доменная сущность транспортной компании."""
-    def __init__(self, warehouse_id: str, safety_training_date: str, forklift_certified: bool, assigned_zone: str, related_entity_id: Optional[str] = None, notes: str = ''):
-        self.warehouse_id = warehouse_id
-        self.safety_training_date = safety_training_date
-        self.forklift_certified = forklift_certified
-        self.assigned_zone = assigned_zone
-        self.related_entity_id = related_entity_id
-        self.notes = notes
+        self.is_on_trip = False
+        self.is_available = True
+        self.completed_trips += 1
+        self.assigned_vehicle.is_available = True
+        self.assigned_vehicle = None
 
-    def record_loading_activity(self) -> None:
-        """Выполняет доменную операцию класса."""
-        return 'Регистрирует время, груз, зону и сотрудника, выполнившего погрузку.'
+    def is_experienced(self, minimum_years: int = 3) -> bool:
+        return self.experience_years >= minimum_years
 
-    def confirm_cargo_staging(self) -> None:
-        """Выполняет доменную операцию класса."""
-        return 'Проверяет размещение груза в назначенной зоне и отмечает готовность к погрузке.'
+    def update_license_categories(self, categories: list[str]) -> None:
+        if not categories:
+            raise ValueError("Нужна хотя бы одна категория прав.")
+        self.license_categories = set(categories)
 
+
+class Dispatcher(Employee):
+    """Диспетчер, координирующий перевозки."""
+
+    def __init__(self, name: str, phone: str, employee_id: str,
+                 salary: float, email: str = ""):
+        super().__init__(name, phone, employee_id, salary, email)
+        self.managed_trips = []
+        self.shift = "day"
+        self.max_trips = 20
+
+    def register_trip(self, trip) -> None:
+        if not self.is_active:
+            raise ValueError("Неактивный диспетчер не может вести рейсы.")
+        if trip in self.managed_trips:
+            raise ValueError("Этот рейс уже зарегистрирован.")
+        if len(self.managed_trips) >= self.max_trips:
+            raise ValueError("Диспетчер достиг лимита рейсов.")
+        self.managed_trips.append(trip)
+
+    def close_trip(self, trip) -> None:
+        if trip not in self.managed_trips:
+            raise ValueError("Рейс не закреплён за диспетчером.")
+        self.managed_trips.remove(trip)
+
+    def set_shift(self, shift: str) -> None:
+        if shift not in ("day", "night"):
+            raise ValueError("Смена должна быть day или night.")
+        self.shift = shift
+
+    def find_managed_trip(self, trip_id: str):
+        for trip in self.managed_trips:
+            if getattr(trip, "trip_id", None) == trip_id:
+                return trip
+        return None
+
+    def has_free_capacity(self) -> bool:
+        return len(self.managed_trips) < self.max_trips
+
+
+class Manager(Employee):
+    """Менеджер, отвечающий за клиентов и заказы."""
+
+    def __init__(self, name: str, phone: str, employee_id: str,
+                 salary: float, email: str = ""):
+        super().__init__(name, phone, employee_id, salary, email)
+        self.managed_customers = []
+        self.approved_orders = []
+        self.monthly_target = 0.0
+        self.monthly_revenue = 0.0
+
+    def register_customer(self, customer: Customer) -> None:
+        if customer in self.managed_customers:
+            raise ValueError("Клиент уже закреплён за менеджером.")
+        self.managed_customers.append(customer)
+
+    def approve_order(self, order) -> None:
+        if not self.is_active:
+            raise ValueError("Неактивный менеджер не может одобрять заказы.")
+        if order in self.approved_orders:
+            raise ValueError("Заказ уже одобрен.")
+
+        status = getattr(order, "status", None)
+        if status not in ("new", "pending"):
+            raise ValueError("Можно одобрить только новый или ожидающий заказ.")
+
+        order.status = "approved"
+        self.approved_orders.append(order)
+
+    def set_monthly_target(self, amount: float) -> None:
+        if amount < 0:
+            raise ValueError("План выручки не может быть отрицательным.")
+        self.monthly_target = amount
+
+    def record_revenue(self, amount: float) -> None:
+        if amount < 0:
+            raise ValueError("Выручка не может быть отрицательной.")
+        self.monthly_revenue += amount
+
+    def calculate_target_completion(self) -> float:
+        if self.monthly_target == 0:
+            return 0.0
+        return self.monthly_revenue / self.monthly_target * 100
+
+    def remove_customer(self, customer: Customer) -> None:
+        if customer not in self.managed_customers:
+            raise ValueError("Клиент не закреплён за этим менеджером.")
+        self.managed_customers.remove(customer)
