@@ -1,277 +1,361 @@
-# Transportation Company — OOP Project
+# Transportation Company — Python OOP Project
 
-A Python 3 domain model and demonstration program for a **transportation company**:
-customers, employees, transport orders, shipments, fleet management, route planning,
-delivery tracking, warehouse operations, payments, invoicing, and insurance.
+A Python object-oriented project that models the core operations of a transportation company. It includes customer and employee management, a vehicle fleet, cargo handling, transport orders, routes and trips, delivery tracking, warehouse operations, payments, invoicing, budgets, and financial reporting.
 
-The project includes a console interface, application services, domain entities,
-custom exceptions, and unit tests. It is designed to be installed, built, and tested
-from the command line without relying on a particular IDE.
+The project is organised as a Python package (`transport_company`) with a separate console interface (`main.py`). It uses in-memory objects and collections; no database or external service is required.
 
 ---
 
+## Features
+
+- Register individual and corporate customers.
+- Register employees, drivers, dispatchers, and managers.
+- Manage different vehicle types, driver assignments, inspections, maintenance, and fuel records.
+- Create and manage regular, perishable, fragile, dangerous, and oversized cargo.
+- Create customer transport orders, add cargo items, set priorities and delivery deadlines, and manage order statuses.
+- Create routes, stops, trips, schedules, and deliveries.
+- Prepare shipments, check loading readiness, load and unload cargo, and record delivery results.
+- Issue invoices, process payments, register refunds, and track expenses and budgets.
+- Generate financial summaries and company-level operational summaries.
+- Apply company policies to validate transport orders.
+
 ## Classes by package
+
+The domain model contains **50 classes** distributed across six modules, plus **12 custom exception classes**.
 
 ### `people` — Customers and employees
 
-| Class | Fields | Key methods |
+| Class | Main data | Key behaviours |
 |---|---|---|
-| `Person` | `name`, `email`, `phone`, `address`, `related_entity_id`, `notes` | `update_contact_details()`, `verify_identity()` |
-| `Customer` | `customer_code`, `billing_address`, `preferred_contact`, `credit_limit`, `related_entity_id`, `notes` | `place_order()`, `request_delivery_quote()` |
-| `BusinessCustomer` | `company_name`, `tax_number`, `contract_number`, `payment_terms_days`, `related_entity_id`, `notes` | `approve_contract_terms()`, `request_monthly_statement()` |
-| `PrivateCustomer` | `identity_document`, `delivery_instructions`, `notification_opt_in`, `customer_since`, `related_entity_id`, `notes` | `confirm_delivery_address()`, `change_notification_preferences()` |
-| `Employee` | `employee_number`, `hire_date`, `salary`, `employment_status`, `related_entity_id`, `notes` | `request_leave()`, `record_performance_review()` |
-| `Driver` | `license_number`, `license_category`, `license_expiry`, `hours_driven_today`, `related_entity_id`, `notes` | `accept_assignment()`, `record_driver_inspection()`, `report_fatigue()` |
-| `Dispatcher` | `dispatch_area`, `shift_start`, `shift_end`, `active_assignments`, `related_entity_id`, `notes` | `assign_vehicle_to_trip()`, `reassign_trip()`, `resolve_dispatch_conflict()` |
-| `Mechanic` | `specialization`, `certification_code`, `workshop_id`, `open_work_orders`, `related_entity_id`, `notes` | `diagnose_vehicle_fault()`, `complete_repair_job()` |
-| `Manager` | `department`, `approval_limit`, `management_level`, `reports_to`, `related_entity_id`, `notes` | `approve_expense()`, `review_operational_metrics()` |
-| `WarehouseWorker` | `warehouse_id`, `safety_training_date`, `forklift_certified`, `assigned_zone`, `related_entity_id`, `notes` | `record_loading_activity()`, `confirm_cargo_staging()` |
+| `Person` | `name`, `phone`, `email`, `is_active` | Update contact details, activate/deactivate a person, return contact information. |
+| `Customer` | `address`, `orders`, `discount_percent`, `is_verified` | Add/remove orders, verify a customer, set and calculate discounts, change address. |
+| `IndividualCustomer` | `passport_number`, `preferred_contact`, `completed_orders` | Set preferred contact method, record completed orders, identify regular customers, update passport data. |
+| `CorporateCustomer` | `tax_number`, `contact_person`, `contract_numbers`, `credit_limit` | Manage contact person and contracts, set a credit limit, check deferred-payment eligibility. |
+| `Employee` | `employee_id`, `salary`, `department`, `is_available`, `assigned_tasks` | Assign and complete tasks, change department, calculate annual salary, check work availability. |
+| `Driver` | `license_number`, `license_categories`, `experience_years`, `assigned_vehicle`, `completed_trips`, `is_on_trip` | Check licence category, assign a vehicle, start/finish a trip, update licence categories. |
+| `Dispatcher` | `managed_trips`, `shift`, `max_trips` | Register and close trips, set a shift, find a managed trip, check dispatch capacity. |
+| `Manager` | `managed_customers`, `approved_orders`, `monthly_target`, `monthly_revenue` | Register/remove customers, approve orders, set revenue targets, record revenue, calculate target completion. |
 
-### `orders` — Orders, shipments and cargo
+### `vehicles` — Fleet and vehicle operation
 
-| Class | Fields | Key methods |
+| Class | Main data | Key behaviours |
 |---|---|---|
-| `TransportOrder` | `order_number`, `created_at`, `status`, `priority`, `customer_id`, `related_order_id` | `validate_order()`, `cancel_order()`, `change_delivery_window()` |
-| `Shipment` | `shipment_number`, `weight_kg`, `volume_m3`, `declared_value`, `customer_id`, `related_order_id` | `split_shipment()`, `consolidate_with_shipment()` |
-| `CargoItem` | `item_code`, `description`, `quantity`, `handling_code`, `customer_id`, `related_order_id` | `mark_as_fragile()`, `calculate_chargeable_weight()` |
-| `Package` | `package_id`, `length_cm`, `width_cm`, `height_cm`, `customer_id`, `related_order_id` | `calculate_volume()`, `assign_package_label()` |
-| `Pallet` | `pallet_code`, `pallet_type`, `max_load_kg`, `is_returnable`, `customer_id`, `related_order_id` | `check_load_capacity()`, `register_pallet_return()` |
-| `DangerousGoodsDeclaration` | `un_number`, `hazard_class`, `packing_group`, `emergency_contact`, `customer_id`, `related_order_id` | `validate_hazard_documentation()`, `prepare_transport_declaration()` |
-| `TemperatureRequirement` | `minimum_celsius`, `maximum_celsius`, `monitoring_interval_minutes`, `excursion_policy`, `customer_id`, `related_order_id` | `check_temperature_reading()`, `record_temperature_excursion()` |
-| `DeliveryProof` | `proof_number`, `signed_by`, `delivered_at`, `photo_reference`, `customer_id`, `related_order_id` | `verify_recipient_signature()`, `attach_delivery_evidence()` |
-| `ReturnRequest` | `return_number`, `reason`, `requested_at`, `return_status`, `customer_id`, `related_order_id` | `approve_return()`, `schedule_return_collection()` |
-| `OrderLine` | `line_number`, `item_description`, `quantity`, `unit_price`, `customer_id`, `related_order_id` | `calculate_line_total()`, `change_quantity()` |
+| `Vehicle` | `vehicle_id`, `brand`, `model`, `year`, `registration_number`, `capacity_kg`, `fuel_type`, `mileage_km`, `is_available` | Change availability and location, update mileage, check cargo capacity, calculate age, manage inspection, maintenance, and fuel records. |
+| `Truck` | `cargo_volume_m3`, `has_crane` | Install/remove a crane, calculate load percentage. |
+| `Van` | `cargo_volume_m3`, `has_side_door` | Open or remove the side door. |
+| `RefrigeratedTruck` | `min_temperature_c`, `max_temperature_c`, `current_temperature_c`, `cooling_enabled` | Set temperature, enable/disable cooling, check temperature range. |
+| `Tanker` | `tank_volume_liters`, `current_volume_liters`, `tank_clean` | Load/unload liquid, clean the tank, mark the tank as dirty. |
+| `FlatbedTruck` | `platform_length_m`, `cargo_secured` | Secure/release cargo, check whether cargo length is supported. |
+| `Trailer` | `trailer_id`, `registration_number`, `capacity_kg`, `volume_m3`, `attached_vehicle`, `is_attached` | Attach to/detach from a vehicle, check carrying capacity. |
+| `VehicleInspection` | `inspection_id`, `vehicle`, `inspection_date`, `inspector`, `passed`, `next_inspection_date` | Conduct an inspection, schedule the next inspection, check whether it is overdue. |
+| `MaintenanceRecord` | `record_id`, `vehicle`, `service_date`, `description`, `cost`, `completed`, `parts_used` | Complete service, add used parts, update maintenance cost. |
+| `FuelRecord` | `record_id`, `vehicle`, `fuel_date`, `liters`, `price_per_liter`, `total_cost`, `fuel_type` | Calculate fuel cost and update the price per litre. |
 
-### `fleet` — Vehicles and maintenance
+### `cargo` — Cargo, packaging, and documents
 
-| Class | Fields | Key methods |
+| Class | Main data | Key behaviours |
 |---|---|---|
-| `Vehicle` | `registration_number`, `make`, `model`, `capacity_kg`, `vehicle_id`, `assigned_employee_id` | `check_capacity_for_shipment()`, `mark_out_of_service()`, `record_odometer_reading()` |
-| `Truck` | `trailer_type`, `axle_count`, `fuel_type`, `emissions_class`, `vehicle_id`, `assigned_employee_id` | `attach_trailer()`, `check_height_restriction()` |
-| `Van` | `cargo_volume_m3`, `urban_access_permit`, `rear_door_height_cm`, `has_refrigeration`, `vehicle_id`, `assigned_employee_id` | `check_urban_access()`, `optimise_parcel_loading()` |
-| `Trailer` | `trailer_number`, `max_payload_kg`, `trailer_length_m`, `inspection_due`, `vehicle_id`, `assigned_employee_id` | `couple_to_vehicle()`, `schedule_trailer_inspection()` |
-| `RefrigeratedUnit` | `target_temperature`, `current_temperature`, `unit_serial`, `last_calibration`, `vehicle_id`, `assigned_employee_id` | `set_target_temperature()`, `raise_temperature_alarm()` |
-| `VehicleInspection` | `inspection_id`, `inspection_date`, `inspector_name`, `result`, `vehicle_id`, `assigned_employee_id` | `record_defect()`, `certify_roadworthiness()` |
-| `MaintenanceRecord` | `record_id`, `maintenance_type`, `performed_at`, `cost`, `vehicle_id`, `assigned_employee_id` | `close_maintenance_record()`, `calculate_next_service_date()` |
-| `FuelTransaction` | `transaction_id`, `litres`, `price_per_litre`, `station_name`, `vehicle_id`, `assigned_employee_id` | `calculate_fuel_cost()`, `flag_unusual_consumption()` |
-| `Tyre` | `tyre_serial`, `position`, `tread_depth_mm`, `installed_at`, `vehicle_id`, `assigned_employee_id` | `check_tread_compliance()`, `record_tyre_rotation()` |
-| `VehicleDocument` | `document_number`, `document_type`, `valid_until`, `issuing_authority`, `vehicle_id`, `assigned_employee_id` | `check_document_validity()`, `request_document_renewal()` |
+| `Cargo` | `cargo_id`, `name`, `weight_kg`, `volume_m3`, `declared_value`, `status`, `origin`, `destination`, `packages`, `documents` | Set destination, pack/unpack, insure cargo, update status, calculate density, check vehicle capacity, manage packages and documents. |
+| `PerishableCargo` | `expiry_date`, `storage_temperature_c`, `requires_refrigeration`, `temperature_history` | Check expiry, record and validate storage temperature, check refrigerated-vehicle compatibility, calculate days to expiry. |
+| `FragileCargo` | `fragility_level`, `requires_special_handling`, `shock_sensitive`, `handling_instructions` | Set handling instructions, assess damage risk, determine whether careful loading is required. |
+| `DangerousCargo` | `hazard_class`, `un_number`, `requires_special_permit`, `permit_number`, `emergency_contact`, `safety_instructions` | Set a permit and emergency contact, add safety instructions, check transport requirements. |
+| `OversizedCargo` | `length_m`, `width_m`, `height_m`, `permit_number`, `route_restrictions`, `requires_escort` | Calculate geometric volume, manage permits and route restrictions, require an escort, check flatbed compatibility. |
+| `CargoPackage` | `package_id`, `package_type`, `weight_kg`, `label`, `is_sealed`, `is_damaged`, `packing_date` | Seal/unseal a package, mark damage, replace a label, check transport readiness. |
+| `CargoDocument` | `document_id`, `cargo`, `document_type`, `issue_date`, `expiry_date`, `document_number`, `is_verified` | Verify/revoke verification, check expiry, update document number, add notes. |
 
-### `routing` — Routes and trips
+### `transport` — Orders, routes, shipments, trips, and deliveries
 
-| Class | Fields | Key methods |
+| Class | Main data | Key behaviours |
 |---|---|---|
-| `Route` | `route_code`, `origin`, `destination`, `distance_km`, `trip_id`, `related_route_id` | `calculate_estimated_duration()`, `avoid_restricted_roads()`, `recalculate_route()` |
-| `RouteStop` | `stop_number`, `location`, `planned_arrival`, `stop_type`, `trip_id`, `related_route_id` | `reschedule_stop()`, `confirm_stop_completion()` |
-| `Trip` | `trip_number`, `departure_time`, `arrival_deadline`, `trip_status`, `trip_id`, `related_route_id` | `start_trip()`, `complete_trip()`, `report_delay()` |
-| `TripAssignment` | `assignment_id`, `assigned_at`, `assignment_status`, `dispatcher_id`, `trip_id`, `related_route_id` | `confirm_assignment()`, `withdraw_assignment()` |
-| `TollCharge` | `toll_id`, `road_name`, `charge_amount`, `charged_at`, `trip_id`, `related_route_id` | `allocate_toll_to_trip()`, `dispute_toll_charge()` |
-| `FuelStop` | `stop_id`, `fuel_station`, `planned_litres`, `planned_time`, `trip_id`, `related_route_id` | `confirm_fuel_stop()`, `compare_fuel_prices()` |
-| `Geofence` | `geofence_id`, `center_latitude`, `center_longitude`, `radius_meters`, `trip_id`, `related_route_id` | `check_vehicle_entry()`, `trigger_geofence_event()` |
-| `TrafficIncident` | `incident_id`, `incident_type`, `reported_at`, `severity`, `trip_id`, `related_route_id` | `estimate_delay_impact()`, `propose_route_detour()` |
-| `DeliveryWindow` | `window_id`, `start_time`, `end_time`, `strictness`, `trip_id`, `related_route_id` | `check_window_feasibility()`, `negotiate_new_window()` |
-| `TrackingEvent` | `event_id`, `event_type`, `occurred_at`, `latitude`, `trip_id`, `related_route_id` | `record_location_update()`, `notify_customer_of_milestone()` |
+| `RoutePoint` | `point_id`, `address`, `sequence_number`, `planned_arrival`, `actual_arrival`, `is_completed` | Record arrival, set planned arrival, calculate delay, add a note. |
+| `Route` | `route_id`, `name`, `origin`, `destination`, `distance_km`, `points`, `restrictions`, `toll_cost` | Add/remove route points, estimate duration and cost, manage restrictions and active state, find the next point, calculate progress. |
+| `OrderItem` | `item_id`, `cargo`, `quantity`, `unit_price`, `special_instructions`, `is_loaded`, `is_unloaded` | Calculate weight, volume, and price; set instructions; mark loading and unloading. |
+| `TransportOrder` | `order_id`, `customer`, `origin`, `destination`, `created_at`, `status`, `items`, `route`, `assigned_trip`, `priority`, `requested_delivery_date` | Add/remove items, set route and status, submit/approve/cancel an order, calculate weight/volume/cost, assign a trip, set priority and deadline. |
+| `Shipment` | `shipment_id`, `order`, `prepared_date`, `items`, `is_ready`, `loaded_vehicle`, `loading_time`, `unloading_time`, `seal_number` | Check readiness, prepare shipment, load onto and unload from a vehicle, set seal number. |
+| `Stop` | `stop_id`, `address`, `purpose`, `planned_time`, `actual_time`, `duration_minutes`, `is_completed` | Schedule and complete a stop, calculate delay, add notes. |
+| `Trip` | `trip_id`, `driver`, `vehicle`, `route`, `departure_time`, `arrival_time`, `status`, `orders`, `stops`, `distance_travelled_km` | Add orders/stops, start/finish/cancel a trip, calculate duration and average speed, add notes. |
+| `Delivery` | `delivery_id`, `order`, `recipient`, `address`, `scheduled_date`, `status`, `actual_delivery_time`, `received_by`, `proof_of_delivery`, `failure_reason` | Mark in transit, confirm delivery, report failure, reschedule, check lateness, record recipient. |
+| `Schedule` | `schedule_id`, `name`, `trips`, `is_active`, `created_at`, `notes` | Add/remove trips, find trips by date or availability, cancel a schedule, add notes. |
 
-### `finance` — Finance and insurance
+### `finance` — Payments, invoices, expenses, and reports
 
-| Class | Fields | Key methods |
+| Class | Main data | Key behaviours |
 |---|---|---|
-| `Invoice` | `invoice_number`, `issued_at`, `due_date`, `total_amount`, `customer_id`, `related_document_id` | `calculate_amount_due()`, `mark_as_paid()`, `issue_credit_note()` |
-| `Payment` | `payment_reference`, `amount`, `payment_method`, `received_at`, `customer_id`, `related_document_id` | `allocate_payment_to_invoice()`, `refund_payment()` |
-| `RateCard` | `rate_card_code`, `base_rate`, `per_km_rate`, `effective_from`, `customer_id`, `related_document_id` | `quote_transport_price()`, `apply_surcharge()` |
-| `Discount` | `discount_code`, `percentage`, `valid_from`, `valid_until`, `customer_id`, `related_document_id` | `check_discount_eligibility()`, `apply_discount()` |
-| `Expense` | `expense_id`, `category`, `amount`, `incurred_at`, `customer_id`, `related_document_id` | `submit_for_approval()`, `allocate_expense_to_trip()` |
-| `PayrollRecord` | `payroll_id`, `period_start`, `period_end`, `gross_pay`, `customer_id`, `related_document_id` | `calculate_net_pay()`, `finalise_payroll()` |
-| `FuelBudget` | `budget_id`, `period`, `allocated_amount`, `spent_amount`, `customer_id`, `related_document_id` | `calculate_budget_variance()`, `forecast_fuel_spend()` |
-| `InsurancePolicy` | `policy_number`, `provider`, `coverage_limit`, `expires_at`, `customer_id`, `related_document_id` | `check_claim_coverage()`, `renew_policy()` |
-| `Claim` | `claim_number`, `claim_type`, `claim_amount`, `claim_status`, `customer_id`, `related_document_id` | `submit_claim_evidence()`, `settle_claim()` |
-| `FinancialReport` | `report_id`, `period`, `revenue`, `operating_cost`, `customer_id`, `related_document_id` | `calculate_profit_margin()`, `export_financial_summary()` |
+| `Payment` | `payment_id`, `order`, `invoice`, `amount`, `payment_method`, `payment_date`, `status`, `refunded_amount`, `transactions` | Process/fail a payment, refund fully or partially, calculate refundable balance, change payment method, check success. |
+| `Invoice` | `invoice_id`, `order`, `issue_date`, `due_date`, `tax_rate`, `discount_amount`, `items`, `additional_charges`, `payments`, `amount_paid`, `status` | Calculate subtotal/tax/total, add charges, apply discount, issue invoice, register payments/refunds, calculate balance, check overdue status, cancel. |
+| `Transaction` | `transaction_id`, `payment`, `transaction_type`, `amount`, `timestamp`, `status`, `external_reference` | Mark successful/failed, reverse a transaction, set external reference, identify refunds. |
+| `Expense` | `expense_id`, `category`, `description`, `amount`, `expense_date`, `receipt_number`, `status`, `approved_by`, `is_reimbursed` | Approve/reject an expense, mark reimbursement, update amount/category, add notes, check receipt. |
+| `Budget` | `budget_id`, `category`, `limit_amount`, `period_start`, `period_end`, `expenses`, `is_active` | Add/remove expenses, calculate spend and remaining balance, check limit, calculate usage percentage, open/close budget. |
+| `SalaryPayment` | `salary_payment_id`, `employee`, `period_start`, `period_end`, `base_salary`, `bonus`, `deductions`, `status`, `payment_date` | Calculate net salary, add bonus/deduction, pay or cancel salary, check payment status. |
+| `FinancialReport` | `report_id`, `period_start`, `period_end`, `payments`, `expenses`, `salary_payments`, `created_at`, `is_finalized` | Collect financial records, calculate revenue/costs/profit, count payments, finalize report, generate summary. |
 
-### `operations` — Warehouse and operations
+### `company` — Company structure and registries
 
-| Class | Fields | Key methods |
+| Class | Main data | Key behaviours |
 |---|---|---|
-| `Warehouse` | `warehouse_code`, `address`, `capacity_pallets`, `operating_hours`, `warehouse_id`, `related_entity_id` | `check_storage_capacity()`, `allocate_storage_zone()` |
-| `StorageZone` | `zone_code`, `zone_type`, `capacity`, `temperature_controlled`, `warehouse_id`, `related_entity_id` | `reserve_storage_space()`, `audit_zone_occupancy()` |
-| `LoadingPlan` | `plan_id`, `loading_date`, `sequence_rule`, `prepared_by`, `warehouse_id`, `related_entity_id` | `optimise_loading_sequence()`, `validate_weight_distribution()` |
-| `Manifest` | `manifest_number`, `created_at`, `trip_number`, `seal_number`, `warehouse_id`, `related_entity_id` | `add_shipment_to_manifest()`, `reconcile_manifest()` |
-| `CustomsDeclaration` | `declaration_number`, `destination_country`, `commodity_code`, `customs_value`, `warehouse_id`, `related_entity_id` | `validate_customs_fields()`, `submit_customs_declaration()` |
-| `Permit` | `permit_number`, `permit_type`, `valid_from`, `valid_until`, `warehouse_id`, `related_entity_id` | `check_permit_for_route()`, `request_permit_extension()` |
-| `ServiceLevelAgreement` | `agreement_number`, `max_delivery_hours`, `on_time_target_percent`, `penalty_rate`, `warehouse_id`, `related_entity_id` | `check_sla_compliance()`, `calculate_service_credit()` |
-| `IncidentReport` | `incident_number`, `incident_category`, `description`, `reported_by`, `warehouse_id`, `related_entity_id` | `classify_incident()`, `escalate_incident()` |
-| `Notification` | `notification_id`, `channel`, `recipient`, `message`, `warehouse_id`, `related_entity_id` | `send_notification()`, `schedule_reminder()` |
-| `AuditLogEntry` | `entry_id`, `actor_id`, `action`, `timestamp`, `warehouse_id`, `related_entity_id` | `record_audit_event()`, `search_related_events()` |
+| `EmployeeRegistry` | `employees`, `registration_history`, `last_updated` | Register/unregister employees, search and filter employees, find drivers, change status, calculate payroll, remove inactive employees. |
+| `CustomerRegistry` | `customers`, `registration_history`, `last_updated` | Register/unregister customers, search and filter customers, find corporate customers, inspect order history, count orders. |
+| `OrderRegistry` | `orders`, `registration_history`, `last_updated` | Register/unregister orders, filter by status/customer/priority, find overdue orders, calculate totals and statistics, cancel orders. |
+| `Fleet` | `fleet_id`, `name`, `max_vehicle_count`, `vehicles`, `assigned_drivers`, `trip_history`, `maintenance_records` | Add/remove vehicles, assign drivers, register trips, filter vehicles, calculate fleet capacity and mileage, find vehicles requiring inspection. |
+| `Warehouse` | `warehouse_id`, `name`, `address`, `capacity_kg`, `used_capacity_kg`, `reserved_capacity_kg`, `manager`, `cargos` | Store/release cargo, reserve capacity, calculate occupancy and cargo value, open/close warehouse. |
+| `Department` | `department_id`, `name`, `manager`, `employees`, `budget`, `monthly_target`, `expenses` | Manage employees and manager, set budget/target, assign tasks, calculate expenses, remaining budget, and payroll. |
+| `Branch` | `branch_id`, `name`, `address`, `phone`, `region`, `manager`, `employees`, `vehicles`, `warehouses` | Manage employees, vehicles, warehouses, and manager; calculate fleet capacity and payroll; check ability to accept an order. |
+| `CompanyPolicy` | `policy_id`, `title`, `category`, `rules`, `effective_from`, `effective_until`, `is_enabled`, `applied_count` | Set/remove rules, check validity, validate orders, apply/enable/disable policies, extend validity. |
+| `TransportCompany` | `company_id`, `name`, `legal_name`, `tax_id`, `branches`, `departments`, `fleet`, registries, `policies`, `financial_reports` | Register company resources, manage branches/departments/policies, validate and approve orders, assign orders to trips, transfer employees, generate company summary. |
 
 ---
 
 ## Associations
 
-An association is a relationship in which one class references another as a field
-or uses it as a method parameter. The domain model documents the following
-**50 relationships**:
+An association is a relationship where one object stores a reference to another object, contains it in a collection, or receives it as a method parameter. The model contains more than 30 such relationships. Examples include:
 
-| From | To | Description |
+| From | To | Relationship |
 |---|---|---|
-| `Customer` | `TransportOrder` | places |
-| `BusinessCustomer` | `Invoice` | is billed through |
-| `PrivateCustomer` | `DeliveryProof` | receives |
-| `TransportOrder` | `Shipment` | contains |
-| `TransportOrder` | `Customer` | belongs to |
-| `TransportOrder` | `DeliveryWindow` | specifies |
-| `Shipment` | `CargoItem` | contains |
-| `CargoItem` | `Package` | is packed in |
-| `Package` | `Pallet` | may be loaded on |
-| `Shipment` | `DangerousGoodsDeclaration` | may require |
-| `Shipment` | `TemperatureRequirement` | may specify |
-| `Shipment` | `DeliveryProof` | is confirmed by |
-| `ReturnRequest` | `TransportOrder` | refers to |
-| `OrderLine` | `TransportOrder` | belongs to |
-| `Driver` | `TripAssignment` | receives |
-| `Dispatcher` | `TripAssignment` | creates |
-| `TripAssignment` | `Trip` | assigns resources to |
-| `Trip` | `Route` | follows |
-| `Route` | `RouteStop` | contains |
-| `Trip` | `Vehicle` | uses |
-| `Truck` | `Trailer` | may tow |
-| `Vehicle` | `VehicleInspection` | undergoes |
-| `Vehicle` | `MaintenanceRecord` | has |
-| `Vehicle` | `FuelTransaction` | records |
-| `Vehicle` | `Tyre` | uses |
-| `Vehicle` | `VehicleDocument` | requires |
-| `RefrigeratedUnit` | `TemperatureRequirement` | fulfils |
-| `Trip` | `TollCharge` | incurs |
-| `Trip` | `FuelStop` | may include |
-| `Route` | `Geofence` | may cross |
-| `Route` | `TrafficIncident` | is affected by |
-| `Trip` | `TrackingEvent` | generates |
-| `Trip` | `DeliveryWindow` | must meet |
-| `Invoice` | `Payment` | is settled by |
-| `Invoice` | `RateCard` | is priced using |
-| `RateCard` | `Discount` | may apply |
-| `Expense` | `Trip` | is allocated to |
-| `Employee` | `PayrollRecord` | has |
-| `FuelBudget` | `FuelTransaction` | covers |
-| `InsurancePolicy` | `Claim` | covers |
-| `Warehouse` | `StorageZone` | contains |
-| `WarehouseWorker` | `Warehouse` | works at |
-| `LoadingPlan` | `Manifest` | supports |
-| `Manifest` | `Shipment` | lists |
-| `CustomsDeclaration` | `Shipment` | declares |
-| `Permit` | `Route` | authorises |
-| `ServiceLevelAgreement` | `Customer` | governs |
-| `IncidentReport` | `Trip` | may concern |
-| `Notification` | `Customer` | is sent to |
-| `AuditLogEntry` | `Employee` | records activity of |
+| `Customer` | `TransportOrder` | Stores the customer's orders. |
+| `TransportOrder` | `Customer` | Identifies the customer who placed the order. |
+| `Driver` | `Vehicle` | Holds the assigned vehicle. |
+| `Dispatcher` | `Trip` | Maintains managed trips. |
+| `Vehicle` | `VehicleInspection` | Stores inspection records. |
+| `Vehicle` | `MaintenanceRecord` | Stores maintenance records. |
+| `Vehicle` | `FuelRecord` | Stores fuel records. |
+| `VehicleInspection` | `Vehicle` | Refers to the inspected vehicle. |
+| `MaintenanceRecord` | `Vehicle` | Refers to the serviced vehicle. |
+| `FuelRecord` | `Vehicle` | Refers to the refuelled vehicle. |
+| `Trailer` | `Vehicle` | Stores the vehicle to which the trailer is attached. |
+| `Cargo` | `CargoPackage` | Contains cargo packages. |
+| `Cargo` | `CargoDocument` | Contains supporting documents. |
+| `CargoDocument` | `Cargo` | Identifies the cargo described by the document. |
+| `OrderItem` | `Cargo` | Refers to the cargo in an order line. |
+| `TransportOrder` | `OrderItem` | Contains order items. |
+| `TransportOrder` | `Route` | Stores the assigned route. |
+| `TransportOrder` | `Trip` | Stores the assigned trip. |
+| `Shipment` | `TransportOrder` | Refers to the source order. |
+| `Shipment` | `Vehicle` | Stores the vehicle used for loading. |
+| `Route` | `RoutePoint` | Contains intermediate route points. |
+| `Trip` | `Driver` | Stores the assigned driver. |
+| `Trip` | `Vehicle` | Stores the assigned vehicle. |
+| `Trip` | `Route` | Stores the route followed by the trip. |
+| `Trip` | `TransportOrder` | Contains orders carried on the trip. |
+| `Trip` | `Stop` | Contains trip stops. |
+| `Schedule` | `Trip` | Stores scheduled trips. |
+| `Delivery` | `TransportOrder` | Refers to the order being delivered. |
+| `Payment` | `TransportOrder` | Identifies the order being paid for. |
+| `Payment` | `Invoice` | Refers to the invoice being settled. |
+| `Payment` | `Transaction` | Contains payment and refund transactions. |
+| `Invoice` | `TransportOrder` | Refers to the billed order. |
+| `Invoice` | `Payment` | Stores payments registered against the invoice. |
+| `Transaction` | `Payment` | Refers to the payment associated with the transaction. |
+| `Expense` | `Manager` | Stores the manager who approved the expense. |
+| `Budget` | `Expense` | Contains expenses assigned to the budget. |
+| `SalaryPayment` | `Employee` | Refers to the employee receiving the salary. |
+| `FinancialReport` | `Payment` | Collects payments for the reporting period. |
+| `FinancialReport` | `Expense` | Collects expenses for the reporting period. |
+| `FinancialReport` | `SalaryPayment` | Collects salary payments for the reporting period. |
+| `EmployeeRegistry` | `Employee` | Stores registered employees. |
+| `CustomerRegistry` | `Customer` | Stores registered customers. |
+| `OrderRegistry` | `TransportOrder` | Stores registered orders. |
+| `Fleet` | `Vehicle` | Stores vehicles belonging to the fleet. |
+| `Fleet` | `Driver` | Stores drivers assigned within the fleet. |
+| `Fleet` | `Trip` | Maintains trip history. |
+| `Warehouse` | `Cargo` | Stores cargo held in the warehouse. |
+| `Department` | `Employee` | Contains department employees. |
+| `Department` | `Expense` | Tracks department expenses. |
+| `Branch` | `Employee` | Contains branch employees. |
+| `Branch` | `Vehicle` | Contains vehicles assigned to the branch. |
+| `Branch` | `Warehouse` | Contains branch warehouses. |
+| `CompanyPolicy` | `TransportOrder` | Validates an order against company rules. |
+| `TransportCompany` | `Branch` | Manages company branches. |
+| `TransportCompany` | `Department` | Manages company departments. |
+| `TransportCompany` | `Fleet` | Owns the company fleet. |
+| `TransportCompany` | `FinancialReport` | Stores company financial reports. |
 
 ---
 
 ## Custom exceptions
 
-Domain-specific exceptions represent invalid operations and business-rule violations.
-The project defines:
+The project defines 12 custom exception classes: one base exception and 11 specialised exceptions.
 
 | Exception | Purpose |
 |---|---|
-| `TransportCompanyError` | Base class for domain errors. |
-| `InvalidOrderError` | An order or shipment fails validation. |
-| `CustomerNotFoundError` | A requested customer or employee record cannot be found. |
-| `VehicleUnavailableError` | A vehicle cannot be assigned. |
-| `DriverUnavailableError` | A driver cannot be assigned. |
-| `CapacityExceededError` | Cargo exceeds vehicle or storage capacity. |
-| `RouteNotFeasibleError` | A route is unsafe or not legally feasible. |
-| `DeliveryWindowError` | A delivery cannot meet its delivery window. |
-| `PaymentProcessingError` | A payment operation fails. |
-| `InvoiceStateError` | An invoice state transition is invalid. |
-| `MaintenanceRequiredError` | A vehicle requires maintenance before use. |
-| `PermitExpiredError` | A required permit has expired. |
-| `DangerousGoodsComplianceError` | Dangerous-goods requirements are not met. |
-| `TemperatureExcursionError` | Cargo temperature is outside its permitted range. |
-| `DuplicateReferenceError` | A unique business reference already exists. |
-| `ResourceConflictError` | A resource is double-booked or otherwise conflicts. |
+| `TransportCompanyError` | Base exception for domain-specific errors. |
+| `InvalidCustomerError` | Invalid customer data or customer operation. |
+| `InvalidDriverError` | Invalid driver data or driver operation. |
+| `InvalidVehicleError` | Invalid vehicle data or vehicle operation. |
+| `VehicleUnavailableError` | A vehicle is not available for the requested operation. |
+| `DriverUnavailableError` | A driver is not available for the requested operation. |
+| `InvalidCargoError` | Invalid cargo data or cargo operation. |
+| `CargoCapacityExceededError` | Cargo exceeds the permitted vehicle capacity. |
+| `InvalidRouteError` | Invalid route or route operation. |
+| `InvalidOrderStatusError` | An order status transition or order operation is invalid. |
+| `PaymentError` | A payment, invoice, or related financial operation fails. |
+| `DeliveryError` | A delivery or shipment operation fails. |
 
 ---
 
-## CLI scenarios
+## Console interface
 
-Run `python main.py` to open the interactive console menu. The CLI is kept separate
-from the application service layer in `transport_company/application.py`.
+Run `uv run python main.py` from the repository root to start the interactive console application. The console interface is implemented in `main.py`; domain classes are kept in the `transport_company` package.
 
-The menu currently demonstrates these workflows:
+The main menu provides these workflows:
 
-1. **Add an employee** — validate and store an employee record.
-2. **Remove an employee** — remove an existing employee by ID.
-3. **Register a shipment** — validate the reference, destination, and positive weight.
-4. **Dispatch a shipment** — change a registered shipment to `in_transit`.
-5. **Generate a report** — show employee count, shipment count, shipments in transit, and total weight.
+1. **Customers** — register individual and corporate customers and display registered customers.
+2. **Employees** — add drivers, employees, dispatchers, and managers; display registered employees.
+3. **Fleet** — add supported vehicle types and display vehicles in the fleet.
+4. **Cargo** — create regular, perishable, fragile, dangerous, and oversized cargo; display cargo records.
+5. **Orders** — create orders, add cargo items, approve orders, list orders, and cancel orders.
+6. **Routes and trips** — create routes and trips, assign orders to trips, start/finish trips, and display route/trip information.
+7. **Finance** — issue invoices, process payments, and display invoices.
+8. **Company summary** — display company-level operational counts and totals.
+
+The current application stores objects in memory. Data entered during a run is not persisted after the program exits.
 
 ---
 
-## Tests, coverage, and command-line setup
+## Development setup with `uv`
 
-The project uses `pytest` and `pytest-cov`. Tests can be run from a terminal and do not
-require an IDE. The pytest configuration sets a minimum coverage threshold of 91%.
-A passing test run means the configured coverage threshold was met; it does not by itself
-prove that every domain method implements complete production business logic.
+The project uses [`uv`](https://docs.astral.sh/uv/) to manage the Python environment and dependencies. Development tools are declared in `pyproject.toml`; `uv.lock` records the resolved dependency versions.
 
-### Install
+### Install `uv`
 
-```bash
-python -m venv .venv
-# Linux/macOS
-source .venv/bin/activate
-# Windows PowerShell: .venv\Scripts\Activate.ps1
-python -m pip install -e . -r requirements.txt
-```
-
-### Run the application
+**macOS / Linux:**
 
 ```bash
-python main.py
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-### Run unit tests and check coverage
+**Windows PowerShell:**
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+### Create the environment and install dependencies
+
+Run these commands from the repository root (the directory containing `pyproject.toml`):
 
 ```bash
-python -m pytest
+uv python pin 3.14
+uv lock
+uv sync --group dev
 ```
 
-### Optional Makefile commands
+The `dev` dependency group should contain the project's development tools, including `pytest`, `coverage`, and `ruff`. The package build configuration uses Hatchling and includes the `transport_company` package.
+
+### Run the console application
 
 ```bash
-make install
-make run
-make test
+uv run python main.py
 ```
+
+### Run class unit tests
+
+Tests are located in `tests/`. The suite tests domain classes; the interactive console in `main.py` is intentionally not part of the unit-test scope.
+
+```bash
+uv run pytest
+```
+
+### Check test coverage
+
+Coverage is measured for the `transport_company` package, not for the console interface:
+
+```bash
+uv run coverage erase
+uv run coverage run -m pytest -q
+uv run coverage report --fail-under=90
+```
+
+The coverage command exits with a non-zero status if coverage is below 90%.
+
+### Run Ruff
+
+```bash
+uv run ruff check .
+```
+
+To apply safe automatic fixes:
+
+```bash
+uv run ruff check --fix .
+```
+
+### Build distributions
+
+The project is configured with Hatchling as its build backend. To build the Python distributions:
+
+```bash
+uv build
+```
+
+Build artifacts are written to `dist/` (wheel and source distribution).
+
+---
+
+## Continuous integration
+
+GitHub Actions workflows are stored in `.github/workflows/`.
+
+### `CI.yml`
+
+The CI workflow runs on pushes, pull requests, and manual dispatch. It:
+
+1. Checks out the repository.
+2. Installs the configured Python version and `uv`.
+3. Installs locked dependencies with `uv sync --locked --group dev`.
+4. Runs Ruff (`uv run --locked ruff check .`).
+5. Runs the class unit tests with Coverage.
+6. Fails if tests fail or total coverage is below 90%.
+
+### `release.yml`
+
+The Release workflow runs when a version tag matching `v*.*.*` is pushed. It repeats the lint, test, and coverage checks, builds distributions with `uv build`, and publishes a GitHub Release with the generated distribution files attached.
+
+To publish a release, update the project version in `pyproject.toml`, commit the changes, and push a version tag. For example:
+
+```bash
+git tag -a v1.0.0 -m "Release version 1.0.0"
+git push origin v1.0.0
+```
+
+A release is not published if linting, tests, coverage enforcement, or package building fails.
 
 ---
 
 ## Project structure
 
 ```text
-main.py                         # Console menu (CLI)
-pyproject.toml                  # Build and pytest configuration
-requirements.txt                # Test dependencies
-Makefile                        # Optional command shortcuts
-transport_company/
-  application.py                # Application/service layer used by the CLI
-  people.py                     # Customers and employees
-  orders.py                     # Orders, shipments and cargo
-  fleet.py                      # Vehicles and maintenance
-  routing.py                    # Routes, trips and tracking
-  finance.py                    # Invoices, payments and insurance
-  operations.py                 # Warehouse and operational records
-  associations.py               # Explicit association catalogue
-  exceptions.py                 # Custom domain exceptions
-tests/
-  test_application.py            # Application workflow tests
-  test_domain_catalog.py          # Domain constructors and method smoke tests
-BEHAVIOR_CATALOG.md              # Expanded domain behavior catalogue
+Laboratory-2/
+├── .github/
+│   └── workflows/
+│       ├── CI.yml                 # Lint, class tests, and coverage gate
+│       └── release.yml            # Build and publish GitHub Releases
+├── tests/
+│   └── test.py                    # Unit tests for domain classes
+├── transport_company/
+│   ├── __init__.py                # Public package exports
+│   ├── people.py                  # Customers and employees
+│   ├── vehicles.py                # Vehicles and vehicle records
+│   ├── cargo.py                   # Cargo, packages, and cargo documents
+│   ├── transport.py               # Orders, routes, shipments, trips, deliveries
+│   ├── finance.py                 # Payments, invoices, expenses, budgets, reports
+│   ├── company.py                 # Registries, fleet, branches, warehouse, policies
+│   └── exceptions.py              # Custom domain exceptions
+├── .coveragerc                    # Coverage source and reporting configuration
+├── .python-version                # Local Python version selected by uv
+├── uv.lock                        # Locked dependency versions
+├── pyproject.toml                 # Project, build, pytest, and Ruff configuration
+├── main.py                        # Interactive console interface
+└── README.md                      # Project documentation
 ```
+
+---
 
 ## Notes
 
-- Python 3.14 or newer is specified in `pyproject.toml`.
-- The CLI and application service layer are separate from the domain entity modules.
-- The current domain catalogue includes methods whose implementations are still basic placeholders;
-  extend them with concrete validation, calculations, state changes, and focused tests before production use.
-- Keep the README synchronized with the implementation as the domain model evolves.
+- The project requires Python 3.10 or newer; the documented local and CI setup uses Python 3.14.
+- `transport_company/__init__.py` exports the public classes and custom exceptions, allowing imports from the package root, for example `from transport_company import TransportCompany, Driver, Truck`.
+- Modules inside `transport_company` should use relative imports between package modules (for example, `from .exceptions import InvalidCargoError`).
+- Unit tests cover domain classes only. The console interface is not included in the test suite.
+- The application currently uses in-memory data structures and does not persist records between runs.
+- The CI coverage threshold is 90%. A coverage percentage measures executed code and does not prove that every business scenario is fully tested.
+- Keep this README aligned with the actual class implementations, CLI menu, package configuration, and GitHub Actions workflows as the project evolves.
