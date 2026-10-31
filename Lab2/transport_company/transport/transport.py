@@ -3,8 +3,8 @@
 from datetime import date, datetime
 
 from .cargo import Cargo
-from .vehicles import Vehicle
-from .exceptions import (
+from ..vehicles.vehicles import Vehicle
+from ..exceptions import (
     InvalidRouteError,
     InvalidOrderStatusError,
     InvalidCargoError,

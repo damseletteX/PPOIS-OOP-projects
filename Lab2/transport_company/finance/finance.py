@@ -2,7 +2,7 @@
 
 from datetime import date, datetime
 
-from .exceptions import PaymentError
+from ..exceptions import PaymentError
 
 
 class Payment:

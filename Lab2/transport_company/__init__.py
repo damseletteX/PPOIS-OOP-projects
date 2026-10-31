@@ -29,7 +29,7 @@ from .people import (
 )
 
 # Транспорт
-from .vehicles import (
+from .vehicles.vehicles import (
     Vehicle,
     Truck,
     Van,
@@ -54,7 +54,7 @@ from .cargo import (
 )
 
 # Перевозки
-from .transport import (
+from .transport.transport import (
     RoutePoint,
     Route,
     OrderItem,
@@ -67,7 +67,7 @@ from .transport import (
 )
 
 # Финансы
-from .finance import (
+from .finance.finance import (
     Payment,
     Invoice,
     Transaction,

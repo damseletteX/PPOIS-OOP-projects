@@ -2,7 +2,7 @@
 
 from datetime import date
 
-from .exceptions import (
+from ..exceptions import (
     InvalidVehicleError,
     VehicleUnavailableError,
 )
