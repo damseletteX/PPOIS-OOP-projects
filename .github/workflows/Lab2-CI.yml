@@ -8,12 +8,12 @@ on:
     tags:
       - "v2*"
     paths:
-      - "Laboratory-2/**"
+      - "Lab2/**"
       - ".github/workflows/Lab2-CI.yml"
 
   pull_request:
     paths:
-      - "Laboratory-2/**"
+      - "Lab2/**"
       - ".github/workflows/Lab2-CI.yml"
 
   workflow_dispatch:
@@ -23,7 +23,7 @@ permissions:
 
 defaults:
   run:
-    working-directory: Laboratory-2
+    working-directory: Lab2
 
 jobs:
   unit-tests:
@@ -40,7 +40,7 @@ jobs:
           version: "0.13.6"
           python-version: "3.14"
           enable-cache: true
-          cache-dependency-glob: Laboratory-2/uv.lock
+          cache-dependency-glob: Lab2/uv.lock
 
       - name: Install dependencies
         run: uv sync --locked --group dev
@@ -71,7 +71,7 @@ jobs:
           version: "0.13.6"
           python-version: "3.14"
           enable-cache: true
-          cache-dependency-glob: Laboratory-2/uv.lock
+          cache-dependency-glob: Lab2/uv.lock
 
       - name: Install dependencies
         run: uv sync --locked --group dev
@@ -83,7 +83,7 @@ jobs:
         uses: actions/upload-artifact@v7.0.2
         with:
           name: transport-company-demo-windows
-          path: Laboratory-2/dist/transport-company-demo.exe
+          path: Lab2/dist/transport-company-demo.exe
           if-no-files-found: error
           retention-days: 14
 

@@ -3,40 +3,6 @@
 from datetime import date, datetime
 
 
-from transport_company import (
-    # Управление компанией
-    TransportCompany,
-    # Люди
-    IndividualCustomer,
-    CorporateCustomer,
-    Employee,
-    Driver,
-    Dispatcher,
-    Manager,
-    # Транспорт
-    Vehicle,
-    Truck,
-    Van,
-    RefrigeratedTruck,
-    Tanker,
-    FlatbedTruck,
-    # Грузы
-    Cargo,
-    PerishableCargo,
-    FragileCargo,
-    DangerousCargo,
-    OversizedCargo,
-    # Перевозки
-    Route,
-    TransportOrder,
-    OrderItem,
-    Trip,
-    # Финансы
-    Invoice,
-    Payment,
-)
-
-
 class ConsoleApp:
     """Организует меню и взаимодействие пользователя с объектами проекта."""
 

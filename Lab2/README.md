@@ -324,7 +324,7 @@ A release is not published if linting, tests, coverage enforcement, or package b
 ## Project structure
 
 ```text
-Laboratory-2/
+Lab2/
 ├── .github/
 │   └── workflows/
 │       ├── CI.yml                 # Lint, class tests, and coverage gate

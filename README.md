@@ -4,8 +4,8 @@
 
 | Lab | Language | Contents                                                           | Docs                                                                                                                                                             |
 |-----|----------|--------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 1   | C++, Python   | [Cantor set](./Laboratory-1/Set), [Turing machine](./Laboratory-1/TuringMachine) | [Cantor set](https://damselettex.github.io/PPOIS/), [Turing machine](https://damselettex.github.io/PPOIS/pdoc/) |
-| 2   | Python   | [Lab 2](./Laboratory-2)                                                   | [Transport Company](https://)                                                                          |
+| 1   | C++, Python   | [Cantor set](./Lab1/Set), [Turing machine](./Lab1/TuringMachine) | [Cantor set](https://damselettex.github.io/PPOIS/), [Turing machine](https://damselettex.github.io/PPOIS/pdoc/) |
+| 2   | Python   | [Lab 2](./Lab2)                                                   | [Transport Company](https://)                                                                          |
 
 ## Requirements
 - C++ 17+
