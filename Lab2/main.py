@@ -2,6 +2,33 @@
 
 from datetime import date, datetime
 
+from transport_company import (
+    Cargo,
+    CorporateCustomer,
+    DangerousCargo,
+    Dispatcher,
+    Driver,
+    Employee,
+    FlatbedTruck,
+    FragileCargo,
+    IndividualCustomer,
+    Invoice,
+    Manager,
+    OrderItem,
+    OversizedCargo,
+    Payment,
+    PerishableCargo,
+    RefrigeratedTruck,
+    Route,
+    Tanker,
+    TransportCompany,
+    TransportOrder,
+    Trip,
+    Truck,
+    Van,
+    Vehicle,
+)
+
 
 class ConsoleApp:
     """Организует меню и взаимодействие пользователя с объектами проекта."""

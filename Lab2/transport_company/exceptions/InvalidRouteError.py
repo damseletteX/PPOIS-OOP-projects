@@ -1,4 +1,4 @@
-from ..exceptions import TransportCompanyError
+from .TransportCompanyError import TransportCompanyError
 
 
 class InvalidRouteError(TransportCompanyError, ValueError):

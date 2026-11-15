@@ -1,8 +1,14 @@
+from __future__ import annotations
+
 from datetime import datetime
-from .Payment import Payment
+from typing import TYPE_CHECKING
+
 from ..exceptions import (
     PaymentError,
 )
+
+if TYPE_CHECKING:
+    from .Payment import Payment
 
 
 class Transaction:

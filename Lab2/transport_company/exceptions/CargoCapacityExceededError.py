@@ -1,4 +1,4 @@
-from ..exceptions import TransportCompanyError  # noqa: N999
+from .TransportCompanyError import TransportCompanyError  # noqa: N999
 
 
 class CargoCapacityExceededError(TransportCompanyError):
