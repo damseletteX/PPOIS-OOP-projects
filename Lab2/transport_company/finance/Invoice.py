@@ -1,5 +1,5 @@
 from datetime import date
-from .Payment import Payment
+from .payment import Payment
 from ..exceptions import (
     PaymentError,
 )

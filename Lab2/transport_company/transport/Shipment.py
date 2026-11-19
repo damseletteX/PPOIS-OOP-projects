@@ -1,6 +1,6 @@
 from datetime import date, datetime
-from .TransportOrder import TransportOrder
-from ..vehicles.Vehicle import Vehicle
+from .transport_order import TransportOrder
+from ..vehicles.vehicle import Vehicle
 from ..exceptions import (
     InvalidOrderStatusError,
     InvalidCargoError,

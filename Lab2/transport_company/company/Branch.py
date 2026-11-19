@@ -5,7 +5,7 @@ from ..exceptions import (
     InvalidVehicleError,
     VehicleUnavailableError,
 )
-from .Warehouse import Warehouse
+from .warehouse import Warehouse
 
 
 class Branch:

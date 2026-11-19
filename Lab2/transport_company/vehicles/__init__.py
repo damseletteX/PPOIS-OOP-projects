@@ -1,13 +1,13 @@
-from .FlatbedTruck import FlatbedTruck
-from .FuelRecord import FuelRecord
-from .MaintenanceRecord import MaintenanceRecord
-from .RefrigeratedTruck import RefrigeratedTruck
-from .Tanker import Tanker
-from .Trailer import Trailer
-from .Truck import Truck
-from .Van import Van
-from .Vehicle import Vehicle
-from .VehicleInspection import VehicleInspection
+from .flatbed_truck import FlatbedTruck
+from .fuel_record import FuelRecord
+from .maintenance_record import MaintenanceRecord
+from .refrigerated_truck import RefrigeratedTruck
+from .tanker import Tanker
+from .trailer import Trailer
+from .truck import Truck
+from .van import Van
+from .vehicle import Vehicle
+from .vehicle_inspection import VehicleInspection
 
 __all__ = [
     "FlatbedTruck",

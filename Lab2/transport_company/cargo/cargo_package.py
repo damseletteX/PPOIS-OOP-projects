@@ -1,4 +1,4 @@
-from datetime import date  # noqa: N999
+from datetime import date
 
 from ..exceptions import (
     InvalidCargoError,

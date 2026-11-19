@@ -1,7 +1,7 @@
 from datetime import date, datetime
-from .Payment import Payment
-from .Expense import Expense
-from .SalaryPayment import SalaryPayment
+from .payment import Payment
+from .expense import Expense
+from .salary_payment import SalaryPayment
 
 
 class FinancialReport:

@@ -1,7 +1,7 @@
-from ..exceptions import (  # noqa: N999
+from ..exceptions import (
     InvalidCargoError,
 )
-from .Cargo import Cargo
+from .cargo import Cargo
 
 
 class OversizedCargo(Cargo):

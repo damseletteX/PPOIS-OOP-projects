@@ -1,4 +1,4 @@
-from .Vehicle import Vehicle
+from .vehicle import Vehicle
 from ..exceptions import (
     InvalidVehicleError,
 )

@@ -1,4 +1,4 @@
-class Person:  # noqa: N999
+class Person:
     """Базовый класс человека."""
 
     def __init__(self, name: str, phone: str, email: str = ""):

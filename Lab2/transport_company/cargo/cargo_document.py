@@ -3,7 +3,7 @@ from datetime import date
 from ..exceptions import (
     InvalidCargoError,
 )
-from .Cargo import Cargo
+from .cargo import Cargo
 
 
 class CargoDocument:

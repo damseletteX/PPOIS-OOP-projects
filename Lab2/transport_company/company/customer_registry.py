@@ -1,5 +1,5 @@
 from datetime import datetime
-from ..people.CorporateCustomer import CorporateCustomer
+from ..people.corporate_customer import CorporateCustomer
 from ..exceptions import (
     InvalidCustomerError,
 )

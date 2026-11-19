@@ -1,8 +1,8 @@
 from datetime import datetime
-from .Route import Route
-from .TransportOrder import TransportOrder
-from .Stop import Stop
-from ..vehicles.Vehicle import Vehicle
+from .route import Route
+from .transport_order import TransportOrder
+from .stop import Stop
+from ..vehicles.vehicle import Vehicle
 from ..exceptions import (
     InvalidRouteError,
     InvalidOrderStatusError,

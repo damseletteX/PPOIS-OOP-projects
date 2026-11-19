@@ -1,10 +1,10 @@
-from .Budget import Budget
-from .Expense import Expense
-from .FinancialReport import FinancialReport
-from .Invoice import Invoice
-from .Payment import Payment
-from .SalaryPayment import SalaryPayment
-from .Transaction import Transaction
+from .budget import Budget
+from .expense import Expense
+from .financial_report import FinancialReport
+from .invoice import Invoice
+from .payment import Payment
+from .salary_payment import SalaryPayment
+from .transaction import Transaction
 
 __all__ = [
     "Budget",

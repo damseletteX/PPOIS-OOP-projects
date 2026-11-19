@@ -1,6 +1,6 @@
 from datetime import date
-from .OrderItem import OrderItem
-from .Route import Route
+from .order_item import OrderItem
+from .route import Route
 from ..exceptions import (
     InvalidRouteError,
     InvalidOrderStatusError,

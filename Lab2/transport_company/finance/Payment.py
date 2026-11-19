@@ -1,5 +1,5 @@
 from datetime import date
-from .Transaction import Transaction
+from .transaction import Transaction
 from ..exceptions import (
     PaymentError,
 )

@@ -1,5 +1,5 @@
 from datetime import date
-from .Trip import Trip
+from .trip import Trip
 from ..exceptions import (
     InvalidRouteError,
 )

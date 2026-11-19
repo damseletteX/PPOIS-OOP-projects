@@ -1,5 +1,5 @@
 from datetime import date  # noqa: I001, N999
-from .Cargo import Cargo
+from .cargo import Cargo
 from ..exceptions import (
     InvalidCargoError,
 )

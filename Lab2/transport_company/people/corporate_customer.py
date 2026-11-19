@@ -1,4 +1,4 @@
-from .Customer import Customer
+from .customer import Customer
 
 
 class CorporateCustomer(Customer):

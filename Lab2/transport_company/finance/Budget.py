@@ -1,5 +1,5 @@
 from datetime import date
-from .Expense import Expense
+from .expense import Expense
 
 
 class Budget:

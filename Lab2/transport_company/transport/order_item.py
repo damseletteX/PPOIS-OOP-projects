@@ -1,4 +1,4 @@
-from ..cargo.Cargo import Cargo
+from ..cargo.cargo import Cargo
 from ..exceptions import (
     InvalidCargoError,
     DeliveryError,

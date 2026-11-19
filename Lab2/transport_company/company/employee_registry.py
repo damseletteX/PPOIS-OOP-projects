@@ -1,5 +1,5 @@
 from datetime import datetime
-from ..people.Driver import Driver
+from ..people.driver import Driver
 from ..exceptions import (
     InvalidDriverError,
 )

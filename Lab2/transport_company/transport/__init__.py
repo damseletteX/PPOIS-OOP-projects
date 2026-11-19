@@ -1,12 +1,12 @@
-from .Delivery import Delivery
-from .OrderItem import OrderItem
-from .Route import Route
-from .RoutePoint import RoutePoint
-from .Schedule import Schedule
-from .Shipment import Shipment
-from .Stop import Stop
-from .TransportOrder import TransportOrder
-from .Trip import Trip
+from .delivery import Delivery
+from .order_item import OrderItem
+from .route import Route
+from .route_point import RoutePoint
+from .schedule import Schedule
+from .shipment import Shipment
+from .stop import Stop
+from .transport_order import TransportOrder
+from .trip import Trip
 
 __all__ = [
     "Delivery",

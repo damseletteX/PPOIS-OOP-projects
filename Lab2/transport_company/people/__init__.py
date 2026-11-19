@@ -1,11 +1,11 @@
-from .CorporateCustomer import CorporateCustomer
-from .Customer import Customer
-from .Dispatcher import Dispatcher
-from .Driver import Driver
-from .Employee import Employee
-from .IndividualCustomer import IndividualCustomer
-from .Manager import Manager
-from .Person import Person
+from .corporate_customer import CorporateCustomer
+from .customer import Customer
+from .dispatcher import Dispatcher
+from .driver import Driver
+from .employee import Employee
+from .individual_customer import IndividualCustomer
+from .manager import Manager
+from .person import Person
 
 __all__ = [
     "CorporateCustomer",

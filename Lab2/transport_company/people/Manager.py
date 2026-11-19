@@ -1,5 +1,5 @@
-from .Customer import Customer
-from .Employee import Employee
+from .customer import Customer
+from .employee import Employee
 
 
 class Manager(Employee):

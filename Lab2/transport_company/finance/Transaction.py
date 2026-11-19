@@ -8,7 +8,7 @@ from ..exceptions import (
 )
 
 if TYPE_CHECKING:
-    from .Payment import Payment
+    from .payment import Payment
 
 
 class Transaction:

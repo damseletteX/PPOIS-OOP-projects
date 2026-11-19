@@ -1,12 +1,12 @@
-from .Branch import Branch
-from .CompanyPolicy import CompanyPolicy
-from .CustomerRegistry import CustomerRegistry
-from .Department import Department
-from .EmployeeRegistry import EmployeeRegistry
-from .Fleet import Fleet
-from .OrderRegistry import OrderRegistry
-from .TransportCompany import TransportCompany
-from .Warehouse import Warehouse
+from .branch import Branch
+from .company_policy import CompanyPolicy
+from .customer_registry import CustomerRegistry
+from .department import Department
+from .employee_registry import EmployeeRegistry
+from .fleet import Fleet
+from .order_registry import OrderRegistry
+from .transport_company import TransportCompany
+from .warehouse import Warehouse
 
 __all__ = [
     "Branch",

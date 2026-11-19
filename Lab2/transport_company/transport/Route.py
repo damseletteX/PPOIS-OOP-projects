@@ -1,4 +1,4 @@
-from .RoutePoint import RoutePoint
+from .route_point import RoutePoint
 from ..exceptions import (
     InvalidRouteError,
 )
